@@ -1,0 +1,51 @@
+---
+description: "LLM debugging + precedence: how to interpret and prioritize Cursor project rules."
+alwaysApply: true
+---
+
+# 900 – LLM Debug / Precedence
+
+## Rule Priority (Highest → Lowest)
+
+1. **Runtime question/task**: user’s explicit request in this chat.
+2. **File-local constraints**: comments in the active file.
+3. **Project rules** (this directory), in this order:
+   - 001-frontend-core.mdc
+   - 010-react-components.mdc
+   - 020-tailwind-style-tokens.mdc
+   - 030-layout-and-motion.mdc
+4. **General best practices**: TypeScript/React/Tailwind defaults.
+
+If a lower layer conflicts with a higher one, obey the higher layer.
+
+## Conflict Resolution
+
+- If two project rules conflict:
+  - Prefer the rule in the lower-numbered file (001 > 010 > 020 > 030).
+- If a user request conflicts with a core invariant:
+  - Obey safety/accessibility invariants first.
+  - Then obey user request as far as possible.
+
+## Output Discipline
+
+- Do not invent new token layers; use: foundation / semantic / component.
+- Do not invent new naming schemes; follow core Stripe-style pattern:
+  - Foundation: `color.surface.0–900`, `space.1–n`, `radius.1–n`.
+  - Semantic: `bg.*`, `fg.*`, `border.*`, `status.*`.
+  - Component: `button.*`, `card.*`, `chip.*`, etc.
+- Do not bypass tokens with raw values unless explicitly instructed in-file.
+
+## Motion Debug Anchor
+
+- Before adding a motion library:
+  - Check `001 – Motion Heuristic`.
+  - If CSS conditions are satisfied, use CSS.
+  - Only escalate to motion library when at least one “library” condition is met.
+
+## When Unsure
+
+- Default to:
+  - Semantic HTML.
+  - Token-driven styling.
+  - CSS-first motion.
+- Never widen scope beyond what the active files + rules require.

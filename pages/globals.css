@@ -1,0 +1,574 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  /* ==========================================================================
+     Classic Border-Box Reset
+     ========================================================================== */
+
+  /* 1. Border-box sizing everywhere */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* 2. Hide scrollbars globally while preserving scroll functionality */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* 2. Remove default margins from typographic elements */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  /* 3. Modern default body styles */
+  body {
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    font-synthesis: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+      monospace;
+  }
+
+  /* 4. Media elements are responsive by default */
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* 5. Inherit fonts (prevents form elements from using OS UI fonts) */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  /* 6. Remove built-in button styles (keeps accessibility; removes UA noise) */
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"] {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  /* 7. Remove animations if user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+:root {
+  /* ==========================================================================
+     Mathematical Design System Constants
+     ========================================================================== */
+
+  /* Base Values */
+  --base-spacing: 0.25rem; /* 4px - base unit for spacing_n = base_spacing × n */
+  --base-font-size: 1rem; /* 16px - base for modular scale */
+  --modular-ratio: 1.25; /* Major third - ratio for type scale */
+  --golden-ratio: 1.618; /* φ - golden ratio */
+  --curvature-factor: 3; /* For corner_radius = min(height, width) / curvature_factor */
+  --gutter-ratio: 0.25; /* gutter = column_width × gutter_ratio */
+  --margin-ratio: 0.05; /* margin = container_width × margin_ratio */
+  --line-height-ratio: 1.5; /* line_height = font_size × line_height_ratio */
+  --baseline-grid: calc(var(--base-font-size) * var(--line-height-ratio) / 2);
+  --max-line-length-ratio: 40; /* max_line_length = font_size × max_line_length_ratio */
+
+  /* Motion Base Values */
+  --motion-base-duration: 120ms; /* Base for micro-motion */
+  --motion-macro-duration: 450ms; /* Base for macro-motion */
+  --motion-frame-time: 8.333ms; /* 1000/120 for 120Hz frame snapping */
+  --motion-spring-stiffness: 300;
+  --motion-damping-ratio: 0.7;
+  --motion-opacity-transition-ratio: 0.5;
+  --motion-stagger-ratio: 0.15; /* stagger_delay = index × (base_duration × stagger_ratio) */
+
+  /* Elevation Base Values */
+  --elevation-shadow-blur-ratio: 1.5; /* shadow_blur = elevation × shadow_blur_ratio */
+  --elevation-shadow-offset-ratio: 0.5; /* shadow_offset_y = elevation × offset_ratio */
+  --elevation-opacity-falloff: 0.1; /* opacity = base_opacity / (elevation^falloff) */
+  --elevation-lift-ratio: 0.25; /* translate_y = -elevation × lift_ratio */
+
+  /* Spacing Scale: spacing_n = base_spacing × n */
+  --space-1: calc(var(--base-spacing) * 1); /* 4px */
+  --space-2: calc(var(--base-spacing) * 2); /* 8px */
+  --space-3: calc(var(--base-spacing) * 3); /* 12px */
+  --space-4: calc(var(--base-spacing) * 4); /* 16px */
+  --space-5: calc(var(--base-spacing) * 5); /* 20px */
+  --space-6: calc(var(--base-spacing) * 6); /* 24px */
+  --space-8: calc(var(--base-spacing) * 8); /* 32px */
+  --space-10: calc(var(--base-spacing) * 10); /* 40px */
+  --space-12: calc(var(--base-spacing) * 12); /* 48px */
+  --space-16: calc(var(--base-spacing) * 16); /* 64px */
+  --space-20: calc(var(--base-spacing) * 20); /* 80px */
+  --space-24: calc(var(--base-spacing) * 24); /* 96px */
+
+  /* Typography Scale: size_n = base_font_size × ratio^n */
+  /* Calculated values: ratio=1.25, so -2=0.64, -1=0.8, 0=1, 1=1.25, 2=1.5625, 3=1.953125, 4=2.44140625, 5=3.0517578125 */
+  --font-size-xs: 0.64rem; /* base × ratio^-2 */
+  --font-size-sm: 0.8rem; /* base × ratio^-1 */
+  --font-size-base: 1rem; /* base × ratio^0 */
+  --font-size-lg: 1.25rem; /* base × ratio^1 */
+  --font-size-xl: 1.5625rem; /* base × ratio^2 */
+  --font-size-2xl: 1.953125rem; /* base × ratio^3 */
+  --font-size-3xl: 2.44140625rem; /* base × ratio^4 */
+  --font-size-4xl: 3.0517578125rem; /* base × ratio^5 */
+
+  /* Line Heights: line_height = font_size × line_height_ratio */
+  --line-height-tight: calc(var(--line-height-ratio) * 0.9);
+  --line-height-normal: var(--line-height-ratio);
+  --line-height-relaxed: calc(var(--line-height-ratio) * 1.2);
+
+  /* Radius Scale: outer_radius = inner_radius + padding */
+  /* Shadcn compatibility: --radius is the base */
+  --radius: 0.625rem; /* 10px - shadcn base */
+  --radius-base: 0.5rem; /* 8px - mathematical base */
+  --radius-sm: calc(var(--radius) - 4px); /* 6px - shadcn compatibility */
+  --radius-md: calc(var(--radius) - 2px); /* 8px - shadcn compatibility */
+  --radius-lg: var(--radius); /* 10px - shadcn compatibility */
+  --radius-xl: calc(var(--radius) + 4px); /* 14px - shadcn compatibility */
+  --radius-2xl: calc(var(--radius-base) * 3); /* 24px */
+  --radius-full: 9999px;
+
+  /* Motion Durations (snapped to 120Hz frames) */
+  --duration-instant: 0ms;
+  --duration-fast: 90ms; /* Button press in */
+  --duration-base: 120ms; /* Micro-motion base */
+  --duration-normal: 150ms; /* Checkbox */
+  --duration-slow: 240ms; /* Micro-motion max */
+  --duration-macro-fast: 300ms; /* Modal fast */
+  --duration-macro: 450ms; /* Modal/Page base */
+  --duration-macro-slow: 600ms; /* Page slow */
+
+  /* Motion Easings */
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Elevation Shadows: shadow_blur = elevation × 1.5, shadow_offset_y = elevation × 0.5 */
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-2: 0 2px 4px -1px rgb(0 0 0 / 0.06), 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-3: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-4: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-5: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Aspect Ratios: {1:1, 4:3, 3:2, 16:9, φ:1} */
+  --aspect-square: 1 / 1;
+  --aspect-4-3: 4 / 3;
+  --aspect-3-2: 3 / 2;
+  --aspect-16-9: 16 / 9;
+  --aspect-golden: var(--golden-ratio) / 1;
+
+  /* Grid System */
+  --grid-columns: 12;
+  --grid-gutter-base: 1rem; /* Will be calculated: gutter = column_width × gutter_ratio */
+  --grid-margin-base: 1rem; /* Will be calculated: margin = container_width × margin_ratio */
+
+  /* Shadcn Color System */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.705 0.015 286.067);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.92 0.004 286.32);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.552 0.016 285.938);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.552 0.016 285.938);
+}
+
+@theme inline {
+  /* ==========================================================================
+     Foundation Tokens: Space Scale
+     spacing_n = base_spacing × n
+     ========================================================================== */
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+  --spacing-20: var(--space-20);
+  --spacing-24: var(--space-24);
+
+  /* ==========================================================================
+     Foundation Tokens: Typography Scale
+     size_n = base_font_size × ratio^n
+     ========================================================================== */
+  --font-size-xs: var(--font-size-xs);
+  --font-size-sm: var(--font-size-sm);
+  --font-size-base: var(--font-size-base);
+  --font-size-lg: var(--font-size-lg);
+  --font-size-xl: var(--font-size-xl);
+  --font-size-2xl: var(--font-size-2xl);
+  --font-size-3xl: var(--font-size-3xl);
+  --font-size-4xl: var(--font-size-4xl);
+
+  --line-height-tight: var(--line-height-tight);
+  --line-height-normal: var(--line-height-normal);
+  --line-height-relaxed: var(--line-height-relaxed);
+
+  /* ==========================================================================
+     Foundation Tokens: Radius Scale
+     outer_radius = inner_radius + padding
+     ========================================================================== */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-full: var(--radius-full);
+
+  /* ==========================================================================
+     Foundation Tokens: Motion Durations
+     Snapped to 120Hz frames: duration_n = round(duration / (1000/120)) × (1000/120)
+     ========================================================================== */
+  --duration-instant: var(--duration-instant);
+  --duration-fast: var(--duration-fast);
+  --duration-base: var(--duration-base);
+  --duration-normal: var(--duration-normal);
+  --duration-slow: var(--duration-slow);
+  --duration-macro-fast: var(--duration-macro-fast);
+  --duration-macro: var(--duration-macro);
+  --duration-macro-slow: var(--duration-macro-slow);
+
+  /* ==========================================================================
+     Foundation Tokens: Motion Easings
+     ========================================================================== */
+  --ease-out-cubic: var(--ease-out-cubic);
+  --ease-in-out-cubic: var(--ease-in-out-cubic);
+  --ease-out-quint: var(--ease-out-quint);
+  --ease-in-out-quint: var(--ease-in-out-quint);
+  --ease-out-quart: var(--ease-out-quart);
+  --ease-out-back: var(--ease-out-back);
+
+  /* ==========================================================================
+     Foundation Tokens: Shadows & Elevation
+     shadow_blur = elevation × 1.5
+     shadow_offset_y = elevation × 0.5
+     ========================================================================== */
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-4: var(--shadow-4);
+  --shadow-5: var(--shadow-5);
+
+  /* ==========================================================================
+     Foundation Tokens: Aspect Ratios
+     {1:1, 4:3, 3:2, 16:9, φ:1}
+     ========================================================================== */
+  --aspect-square: var(--aspect-square);
+  --aspect-4-3: var(--aspect-4-3);
+  --aspect-3-2: var(--aspect-3-2);
+  --aspect-16-9: var(--aspect-16-9);
+  --aspect-golden: var(--aspect-golden);
+
+  /* ==========================================================================
+     Semantic Tokens: Colors (Shadcn)
+     ========================================================================== */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+  }
+
+  /* ==========================================================================
+     Typography Defaults
+     line_height = font_size × 1.4–1.6
+     ========================================================================== */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: var(--line-height-tight);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: var(--font-size-4xl);
+  }
+  h2 {
+    font-size: var(--font-size-3xl);
+  }
+  h3 {
+    font-size: var(--font-size-2xl);
+  }
+  h4 {
+    font-size: var(--font-size-xl);
+  }
+  h5 {
+    font-size: var(--font-size-lg);
+  }
+  h6 {
+    font-size: var(--font-size-base);
+  }
+
+  p {
+    line-height: var(--line-height-normal);
+  }
+
+  /* ==========================================================================
+     Blockquotes
+     ========================================================================== */
+  blockquote {
+    border-left: 4px solid var(--border);
+    padding-left: 1em;
+    margin: 1em 0;
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+
+  blockquote p {
+    margin: 0.5em 0;
+  }
+
+  /* ==========================================================================
+     Horizontal Rules
+     ========================================================================== */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2em 0;
+  }
+
+  /* ==========================================================================
+     Default Transitions
+     Micro-motion: 120–240ms, Macro-motion: 400–600ms
+     ========================================================================== */
+  button,
+  a,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  [data-state] {
+    transition-property: color, background-color, border-color, opacity,
+      transform, box-shadow;
+    transition-timing-function: var(--ease-out-cubic);
+    transition-duration: var(--duration-base);
+  }
+
+  /* ==========================================================================
+     Default Enter/Exit Patterns
+     Enter: fade + scale(0.96→1) + translateY(8→0)
+     Exit: translateY(0→−8) + fade
+     ========================================================================== */
+  [data-state="open"],
+  [data-state="entering"] {
+    animation: enter-base var(--duration-macro) var(--ease-out-quint);
+  }
+
+  [data-state="closed"],
+  [data-state="exiting"] {
+    animation: exit-base var(--duration-macro) var(--ease-out-quint);
+  }
+
+  @keyframes enter-base {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes exit-base {
+    from {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.96) translateY(-0.5rem);
+    }
+  }
+
+  /* ==========================================================================
+     Elevation Behavior
+     translate_y = –elevation × 0.25
+     hover_lift = +1 elevation for 120ms ease-out-cubic
+     ========================================================================== */
+  [data-elevation="1"] {
+    box-shadow: var(--shadow-1);
+  }
+
+  [data-elevation="2"] {
+    box-shadow: var(--shadow-2);
+  }
+
+  [data-elevation="3"] {
+    box-shadow: var(--shadow-3);
+  }
+
+  [data-elevation="4"] {
+    box-shadow: var(--shadow-4);
+  }
+
+  [data-elevation="5"] {
+    box-shadow: var(--shadow-5);
+  }
+
+  [data-elevation]:hover {
+    transition: box-shadow var(--duration-base) var(--ease-out-cubic);
+  }
+
+  [data-elevation="1"]:hover {
+    box-shadow: var(--shadow-2);
+  }
+  [data-elevation="2"]:hover {
+    box-shadow: var(--shadow-3);
+  }
+  [data-elevation="3"]:hover {
+    box-shadow: var(--shadow-4);
+  }
+  [data-elevation="4"]:hover {
+    box-shadow: var(--shadow-5);
+  }
+}

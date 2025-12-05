@@ -1,0 +1,48 @@
+---
+description: "Layout and motion application: spatial patterns, balance, and motion choreography."
+globs: ["src/**/*.{tsx,jsx,css,scss}"]
+---
+
+# 030 – Layout + Motion Application
+
+## 1. Layout Patterns
+
+- Use spacing and type scales from `001 – Frontend Core`; do not invent new arbitrary steps.
+- Use only allowed aspect ratios (`1:1`, `3:2`, `4:3`, `16:9`, `φ:1`) for media and card surfaces.
+- Prefer:
+  - Flexbox for lists and “one active, others idle” patterns (flex-basis driven by CSS vars).
+  - Grid for centering and layered overlays.
+
+## 2. Balance and Alignment
+
+- Use visual weight heuristic to avoid lopsided layouts:
+  - Roughly equal weight left/right and top/bottom.
+- Snap text lines, key edges, and components to the baseline grid from `001`.
+- Avoid arbitrary pixel nudges; align to the grid wherever possible.
+
+## 3. Depth
+
+- Encode depth via:
+  - Elevation tokens (shadows).
+  - Opacity hierarchy.
+- Do not introduce custom z-motion or parallax outside well-defined cases.
+
+## 4. Motion Choreography
+
+- Durations and easings must come from motion tokens defined under `001`.
+- Default sequence:
+  - Container appears.
+  - Primary content appears.
+  - Affordances (buttons, controls) appear last.
+- Stagger:
+  - `delay_i ≈ i × (base_duration × 0.15)` for list-like entrances.
+- Respect `prefers-reduced-motion` in all motion-related CSS and JS.
+
+## 5. Library Choice Reference
+
+- For any layout or motion work:
+  - Use native CSS for simple, discrete state changes and small layout adjustments.
+  - Use a motion library only when:
+    - Continuous input, FLIP, shared-element, or physics is required.
+    - This matches `001 – Motion Heuristic`.
+- Do not introduce a motion library solely for cosmetic animations.

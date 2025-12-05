@@ -1,0 +1,60 @@
+---
+description: "Tailwind v4 usage: token-driven styling, minimalist high-contrast style, CSS-first logic."
+globs: ["src/**/*.{tsx,jsx,css}", "src/styles/**/*"]
+---
+
+# 020 – Tailwind v4 + Tokens
+
+## 1. Tailwind Structure
+
+- Use a single CSS entry: `@import "tailwindcss";`.
+- Define tokens with `@theme`:
+  - Foundation scales: `color.surface.*`, `color.accent.*`, `space.*`, `radius.*`, `shadow.*`, `motion.*`.
+- Use:
+  - `@layer base` for typography and global base styles.
+  - `@layer components` for reusable shells (buttons, cards, overlays, disclosures, etc.).
+
+## 2. Token Usage
+
+- Foundation tokens: scales only (no direct component use).
+- Semantic tokens: `bg.*`, `fg.*`, `border.*`, `status.*` derived from foundation.
+- Component tokens: `button.*`, `card.*`, `chip.*` derived from semantic.
+- Components must reference semantic/component tokens, not raw values.
+
+## 3. Minimal Aesthetic
+
+- High-contrast surfaces:
+  - Light: bright surface, dark text.
+  - Dark: dark surface, bright text.
+- Depth via:
+  - Thin borders.
+  - Soft shadows from elevation tokens.
+- Typography:
+  - Fluid display for anchors.
+  - Modular scale for body and captions.
+
+## 4. CSS Variables as Interface
+
+- CSS vars are the only bridge from runtime logic to visuals.
+- Use vars for:
+  - Layout parameters (e.g. widths, offsets).
+  - Motion parameters (durations, easings, spring constants).
+  - SVG parameters (path lengths, progress values).
+- JS must not hardcode visual values outside tokens.
+
+## 5. CSS-First State Logic
+
+- Use native inputs + `:has(input:checked)` for toggles, segmented controls, simple stateful UI.
+- Inputs hidden using `sr-only`; labels/siblings styled based on checked state.
+- Use `data-state` and `data-slot` for styling selectors instead of adding extra props.
+
+## 6. Motion in Tailwind
+
+- Use Tailwind transition utilities for simple transitions (opacity, transform, color, shadow).
+- Define keyframes in CSS only when needed; durations/easings from motion tokens.
+- Always include `prefers-reduced-motion` guards.
+
+## 7. Integration
+
+- Geometry, typography, and motion parameters come from `001 – Frontend Core`.
+- Do not bypass tokens or core rules when writing Tailwind classes or custom CSS.

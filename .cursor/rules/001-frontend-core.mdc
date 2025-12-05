@@ -1,0 +1,81 @@
+---
+description: "Core frontend invariants: tokens, math, motion, accessibility, and motion-library heuristic."
+alwaysApply: true
+---
+
+# 001 – Frontend Core
+
+## 1. Tokens (Single Source of Truth)
+
+- All visuals must flow through three layers: **foundation → semantic → component**.
+- Components must not use raw values for color/space/radius/motion.
+- Visual configuration is via CSS variables; JS may only update CSS vars.
+
+### 1.1 Stripe-style Naming
+
+- Foundation: `color.surface.*`, `color.accent.*`, `space.*`, `radius.*`, `shadow.*`, `motion.*`.
+- Semantic: `bg.app`, `bg.card`, `fg.default`, `fg.muted`, `border.subtle`, `status.success`, `status.error`, etc.
+- Component: `button.bg`, `button.fg`, `button.radius`, `card.bg`, `card.shadow`, `chip.bg`, etc.
+- Pattern: `{layer}.{category}.{role}[.scale]`.
+
+## 2. Geometry and Typography
+
+- Spacing: `spacing_n = base_spacing × n` (use a small integer set).
+- Type scale: `size_n = base_font_size × ratio^n` (one ratio for type).
+- Aspect ratios allowed: `{1:1, 3:2, 4:3, 16:9, φ:1}` only.
+- Line height: `line_height ≈ font_size × 1.4–1.6`.
+- Baseline grid: `baseline = line_height / 2`; snap text/edges to multiples.
+- Max line length: `≈ font_size × 35–45`.
+
+## 3. Elevation and Visual Weight
+
+- Visual weight heuristic: `weight ≈ area × opacity × contrast`; keep left/right, top/bottom roughly balanced.
+- Elevation: use a small discrete set of shadow tokens; no ad-hoc shadows.
+
+## 4. Motion System
+
+- Micro transitions: `120–240ms`.
+- Macro transitions: `400–600ms`.
+- Snap durations to 120Hz frames.
+- Default enter: `fade + scale(0.96→1) + translateY(8→0)`.
+- Default exit: `translateY(0→−8) + fade`.
+- Respect `prefers-reduced-motion`: fallback to zero/near-zero motion.
+
+## 5. Accessibility
+
+- Prefer native, semantic HTML; no custom controls unless necessary.
+- Persistent labels; placeholders never act as labels.
+- Visible focus; customize only via `:focus-visible`, never remove.
+- Modals/popovers: trap focus, restore on close, block background interaction.
+- Never block browser zoom.
+
+## 6. Motion Heuristic: CSS vs Motion Library
+
+Use **CSS only** when ALL are true:
+
+1. State is discrete and DOM-visible (`:hover`, `:focus-visible`, `:checked`, `:has()`, `data-state`).
+2. Motion is local (opacity, color, small scale/translate, shadow).
+3. Layout stays in one stacking context (no cross-list FLIP, no reparenting).
+4. Timing is static (durations/easings from motion tokens).
+5. Progressive enhancement required; UX must work without JS.
+
+Use a **motion library** when ANY are true:
+
+1. Continuous input (drag, inertia, scroll-linked, scrubbed timelines).
+2. Complex layout transitions (FLIP, shared elements, reparenting, cross-lists).
+3. Large temporal state space (wizards, multi-step flows, complex widgets).
+4. Physics-based behavior (springs, velocity-dependent, dynamic rest).
+5. Lifecycle control needed (interrupt, cancel, orchestrated sequences).
+
+## 7. Rule Precedence
+
+- If rules conflict: `001-frontend-core` overrides all other project rules.
+- Safety/accessibility invariants override user preferences when necessary.
+
+#### shadcn instructions
+
+Use the latest version of Shadcn to install new components, like this command to add a button component:
+
+```bash
+bunx shadcn@latest add button
+```

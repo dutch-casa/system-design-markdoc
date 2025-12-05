@@ -1,0 +1,125 @@
+---
+description: "React component architecture: structure, state ownership, and context/store/machines."
+globs: ["src/**/*.{tsx,jsx}"]
+---
+
+# 010 – React Components
+
+## 1. Structure
+
+- Prefer compound components: `Root`, `Item`, `Trigger`, `Content` (+ `Header`, `Body`, `Footer`).
+- Each component: single responsibility; pure where possible.
+- Prefer composition and slots over prop explosion.
+
+## 2. Controlled vs Uncontrolled
+
+- Controlled:
+  - Parent owns value; component uses `value` + `onChange` (or `open/onOpenChange`, `checked/onCheckedChange`).
+  - No internal state for that value.
+- Uncontrolled:
+  - Component owns state; `defaultValue` (or `defaultOpen`, `defaultChecked`) + internal state + `onChange` notification.
+- Dual-mode rule:
+  - If `value` present ⇒ controlled; ignore `defaultValue`.
+  - If `value` absent ⇒ uncontrolled.
+  - Both at once ⇒ invalid; fail fast.
+
+## 3. Context vs Store vs State Machine
+
+- Context:
+  - Subtree-scoped shared state (form/field groups, table context, wizard context).
+- Global store:
+  - Cross-app, persistent, multi-consumer state (auth, user profile, feature flags, app config).
+- State machine:
+  - Temporal or multi-step logic (wizards, multi-step flows, uploaders, complex interactions).
+- Do not push trivial local UI state into global stores.
+
+## 4. Data Attributes
+
+- `data-state` exposes UI state (`open`, `closed`, `active`, `inactive`, `loading`, `disabled`, `on`, `off`).
+- `data-slot` exposes structure (`card.header`, `card.footer`, `nav.item`, etc.).
+- Style using attributes + tokens; do not add per-state class props (e.g. `activeClassName`).
+
+## 5. API Design
+
+- Props:
+  - Minimal, explicit, typed.
+  - One clear prop per concern.
+- Structure:
+  - Children or named slots; or subcomponents (`Card.Header`, `Card.Body`).
+- Render props:
+  - Use when caller must own markup but component owns behavior/data.
+
+## 6. Motion Integration
+
+- Components are motion-library-agnostic; no hard dependency in core contract.
+- When adding motion:
+  - Follow `001 – Motion Heuristic`.
+  - Prefer CSS-first; only escalate to a motion library when heuristic says so.
+
+## 7. Core React Patterns (from Patterns.dev)
+
+### Container / Presentational (or Container / “Smart–Dumb”)
+Container handles data, state, side-effects (e.g. fetch, compute). Presentational receives data via props, focuses only on UI. Encourages separation of logic vs view. 
+
+### Custom Hooks (Hooks Pattern)
+Encapsulate reusable logic (state, effects) in hooks. Use them for stateful or side-effect logic instead of container classes. Hooks can replace container components while keeping presentational/pure components. 
+
+### Higher-Order Components (HOC Pattern)
+HOCs wrap components to inject behavior/props. Use sparingly; modern React often favors hooks/composition over excessive HOCs. 
+
+### Render Props Pattern
+Component receives a function prop to render UI, while owning some behavior or state. Useful when consumer should control markup but share logic/behavior. 
+
+### Compound Components Pattern
+A set of components working together (root + subcomponents) to provide a coherent API for complex UI. Enables logical grouping, context-sharing, clear API. 
+
+#8.  Effects, Events, and Data Flow
+
+Never use useEffect for data fetching, mutations, or cache updates.
+React Query owns all network I/O, caching, invalidation, and race-handling.
+
+Never use useEffect to synchronize derived values.
+Compute derived values inline or inside memoized selectors; treat effects as a failure mode.
+
+Never use useEffect to respond to UI interactions.
+All reactions to user input occur inside event handlers (click, submit, key, pointer).
+Event handlers are the sole trigger points for imperative work.
+
+Never use useEffect to mirror props into state.
+If state depends on props, restructure ownership; do not re-sync artificially.
+
+Never use useEffect for component initialization when the “init” is data-driven.
+Let React Query handle loading, refreshing, and background updates.
+
+Never use useEffect to coordinate global state or stores.
+Update stores inside event handlers or inside React Query callbacks.
+
+If an effect is absolutely required (e.g., imperative subscription, non-React external system, cleanup-bound resource):
+
+Narrow it to the smallest possible scope.
+
+Restrict dependencies to stable references.
+
+Use useEffectEvent to keep event-like logic out of dependency semantics and prevent stale closures.
+
+Treat the effect as an escape hatch, not a standard pattern.
+
+Effects are for external synchronization only (browser APIs, subscriptions, observers).
+Everything else remains inside event handlers, React Query, or React’s render flow.
+
+
+#9. Derived Values
+• State holds only environment inputs (user intent, server data, time, config).
+• Everything else is a pure projection from those inputs.
+• Projections are never stored, synced, or repaired; they are recomputed.
+• Divergence means there is one canonical input and all else is projection.
+• If a projection needs persistence, it is actually an input.
+• If a projection fails, you omitted an input.
+
+Heuristic for React
+
+Use state only when the value:
+• Represents user-controlled intent, or
+• Represents a frozen external input captured at a moment in time.
+
+Otherwise compute it directly (or memoize purely for performance).
