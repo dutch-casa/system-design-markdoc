@@ -16,18 +16,18 @@ Display content in switchable panels using the `{%​ tabs %}` tag.
 ### Syntax
 
 ````md
-{%​ tabs %}
-{%​ tab label="JavaScript" %}
+{​%​ tabs %}
+{​%​ tab label="JavaScript" %}
 ```javascript
 console.log("Hello");
 ```
-{%​ /tab %}
-{%​ tab label="Python" %}
+{​%​ /tab %}
+{​%​ tab label="Python" %}
 ```python
 print("Hello")
 ```
-{%​ /tab %}
-{%​ /tabs %}
+{​%​ /tab %}
+{​%​ /tabs %}
 ````
 
 ### Example
@@ -101,14 +101,14 @@ Create numbered, sequential procedures using the `{%​ steps %}` tag.
 ### Syntax
 
 ```md
-{%​ steps %}
-{%​ step %}
+{​%​ steps %}
+{​%​ step %}
 First step description
-{%​ /step %}
-{%​ step %}
+{​%​ /step %}
+{​%​ step %}
 Second step description
-{%​ /step %}
-{%​ /steps %}
+{​%​ /step %}
+{​%​ /steps %}
 ```
 
 ### Example

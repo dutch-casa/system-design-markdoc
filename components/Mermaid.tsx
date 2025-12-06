@@ -59,8 +59,17 @@ interface RootProps {
 
 function Root({ chart, as = "figure", asChild, children }: RootProps) {
   const { resolvedTheme } = useTheme();
-  const mermaidTheme: MermaidTheme = resolvedTheme === "dark" ? "dark" : "default";
-  const { svg, error, isPending } = useMermaid(chart, mermaidTheme);
+  const [mounted, setMounted] = React.useState(false);
+  
+  // Prevent hydration mismatch by only using theme after mount
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Use default theme on server, resolved theme on client
+  // Only enable query after mount to prevent hydration mismatch
+  const mermaidTheme: MermaidTheme = mounted && resolvedTheme === "dark" ? "dark" : "default";
+  const { svg, error, isPending } = useMermaid(chart, mermaidTheme, mounted);
   const panzoomRef = useRef<PanZoom | null>(null);
   const Comp = asChild ? Slot : as;
 

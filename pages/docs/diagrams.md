@@ -10,10 +10,10 @@ Create diagrams using [Mermaid](https://mermaid.js.org/) syntax. Diagrams suppor
 ## Syntax
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 graph TD
 A[Start] --> B[End]
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Flowcharts
@@ -30,14 +30,14 @@ C --> E[End]
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 graph TD
 A[Start] --> B{Is it working?}
 B -->|Yes| C[Great!]
 B -->|No| D[Debug]
 D --> B
 C --> E[End]
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ### Left to Right
@@ -49,11 +49,11 @@ B --> C[Output]
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 graph LR
 A[Input] --> B[Process]
 B --> C[Output]
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Sequence Diagrams
@@ -72,7 +72,7 @@ participant Database
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 sequenceDiagram
 participant Client
 participant Server
@@ -83,7 +83,7 @@ participant Database
     Database-->>Server: Results
     Server-->>Client: HTTP Response
 
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Class Diagrams
@@ -108,7 +108,7 @@ User "1" --> "\*" Order : places
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 classDiagram
 class User {
 +String id
@@ -125,7 +125,7 @@ class Order {
 +process()
 }
 User "1" --> "*" Order : places
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Entity Relationship Diagrams
@@ -150,7 +150,7 @@ PRODUCT ||--o{ LINE_ITEM : "ordered in"
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 erDiagram
 USER ||--o{ ORDER : places
 ORDER ||--|{ LINE_ITEM : contains
@@ -167,7 +167,7 @@ PRODUCT ||--o{ LINE_ITEM : "ordered in"
         string user_id FK
     }
 
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## State Diagrams
@@ -183,7 +183,7 @@ Published --> [*]
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 stateDiagram-v2
 [*] --> Draft
 Draft --> Review : Submit
@@ -191,7 +191,7 @@ Review --> Draft : Request Changes
 Review --> Approved : Approve
 Approved --> Published : Publish
 Published --> [*]
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Gantt Charts
@@ -216,7 +216,7 @@ dateFormat YYYY-MM-DD
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 gantt
 title Project Timeline
 dateFormat YYYY-MM-DD
@@ -229,7 +229,7 @@ dateFormat YYYY-MM-DD
     Backend         :b1, after a2, 21d
     Frontend        :b2, after a2, 21d
 
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Pie Charts
@@ -243,13 +243,13 @@ pie title Traffic Sources
 {% /mermaid %}
 
 ```text
-{​% mermaid %}
+{​%​ mermaid %}
 pie title Traffic Sources
 "Organic Search" : 45
 "Direct" : 25
 "Social Media" : 20
 "Referral" : 10
-{​% /mermaid %}
+{​%​ /mermaid %}
 ```
 
 ## Interaction

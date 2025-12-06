@@ -15,10 +15,23 @@ async function renderMermaidInIframe(
   return new Promise((resolve, reject) => {
     const messageId = `mermaid-${Math.random().toString(36).slice(2, 11)}`;
 
+    // Detect chart types that don't use ELK layout
+    // Check first non-empty line for chart type (case-insensitive)
+    const chartLines = chart.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const firstLine = chartLines.length > 0 ? chartLines[0].toLowerCase() : '';
+    const isGantt = firstLine.startsWith('gantt');
+    const isPie = firstLine.startsWith('pie');
+
     // Create isolated iframe
+    // Gantt charts need proper width for layout calculations
     const iframe = document.createElement("iframe");
-    iframe.style.cssText =
-      "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;visibility:hidden";
+    if (isGantt) {
+      iframe.style.cssText =
+        "position:absolute;left:-9999px;top:-9999px;width:1200px;height:600px;visibility:hidden";
+    } else {
+      iframe.style.cssText =
+        "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;visibility:hidden";
+    }
     document.body.appendChild(iframe);
 
     // Cleanup function
@@ -57,28 +70,34 @@ async function renderMermaidInIframe(
       return;
     }
 
+    const needsElk = !isGantt && !isPie;
+
+    // Build config object conditionally
+    const configParts = [
+      `startOnLoad: false`,
+      `theme: ${JSON.stringify(theme)}`,
+      `securityLevel: 'loose'`,
+    ];
+    
+    if (needsElk) {
+      configParts.push(`layout: 'elk'`);
+    }
+    
+    configParts.push(`flowchart: { useMaxWidth: true, htmlLabels: true }`);
+    configParts.push(`stateDiagram: { useMaxWidth: true }`);
+    configParts.push(`stateDiagramV2: { useMaxWidth: true }`);
+    configParts.push(`gantt: { useMaxWidth: true }`);
+
     const html = `<!DOCTYPE html>
 <html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs';
+${needsElk ? `import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs';
 
-await mermaid.registerLayoutLoaders(elkLayouts);
+await mermaid.registerLayoutLoaders(elkLayouts);` : ''}
 mermaid.initialize({
-  startOnLoad: false,
-  theme: ${JSON.stringify(theme)},
-  securityLevel: 'loose',
-  layout: 'elk',
-  flowchart: { 
-    useMaxWidth: true, 
-    htmlLabels: true
-  },
-  stateDiagram: {
-    useMaxWidth: true
-  },
-  stateDiagramV2: {
-    useMaxWidth: true
-  }
+  ${configParts.join(',\n  ')}
 });
 
 const chart = ${JSON.stringify(chart)};
@@ -89,7 +108,9 @@ try {
   const { svg } = await mermaid.render(id, chart);
   window.parent.postMessage({ type: 'mermaid-success', svg, messageId }, '*');
 } catch (err) {
-  window.parent.postMessage({ type: 'mermaid-error', message: err.message || String(err), messageId }, '*');
+  const errorMsg = err.message || String(err);
+  console.error('Mermaid render error:', errorMsg, 'Chart:', chart.substring(0, 100));
+  window.parent.postMessage({ type: 'mermaid-error', message: errorMsg, messageId }, '*');
 }
 </script>
 </head><body></body></html>`;
@@ -100,11 +121,11 @@ try {
   });
 }
 
-export function useMermaid(chart: string, theme: MermaidTheme = "default") {
+export function useMermaid(chart: string, theme: MermaidTheme = "default", enabled: boolean = true) {
   const query = useQuery({
     queryKey: ["mermaid", chart, theme],
     queryFn: () => renderMermaidInIframe(chart, theme),
-    enabled: !!chart && typeof window !== "undefined",
+    enabled: enabled && !!chart && typeof window !== "undefined",
     staleTime: Infinity,
     retry: false,
   });

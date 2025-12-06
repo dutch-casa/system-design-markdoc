@@ -9,10 +9,16 @@ type TocItem = {
   id?: string;
   level?: number;
   title: string;
+  index?: number;
 };
 
-function useActiveSection(itemIds: string[]) {
+function useActiveSection(itemIds: string[], pathname: string) {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    // Reset active index when pathname changes
+    setActiveIndex(0);
+  }, [pathname]);
 
   useEffect(() => {
     if (itemIds.length === 0) return;
@@ -78,20 +84,39 @@ function useActiveSection(itemIds: string[]) {
   return activeIndex;
 }
 
-export function TableOfContents({ toc }: { toc: TocItem[] }) {
+export function TableOfContents({ 
+  toc, 
+  pathname 
+}: { 
+  toc: TocItem[]; 
+  pathname: string;
+}) {
   const items = toc.filter(
     (item) => item.id && (item.level === 2 || item.level === 3)
   );
 
   const itemIds = items.map((item) => item.id).filter(Boolean) as string[];
-  const activeIndex = useActiveSection(itemIds);
+  const activeIndex = useActiveSection(itemIds, pathname);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
       e.preventDefault();
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        const scrollContainer = document.querySelector(".page-content");
+        if (scrollContainer) {
+          const rect = element.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const scrollTop = scrollContainer.scrollTop;
+          const targetPosition = scrollTop + rect.top - containerRect.top - 24; // 24px additional offset
+          
+          scrollContainer.scrollTo({
+            top: targetPosition,
+            behavior: "smooth",
+          });
+        } else {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
         window.history.pushState(null, "", `#${id}`);
       }
     },
@@ -127,17 +152,18 @@ export function TableOfContents({ toc }: { toc: TocItem[] }) {
         {items.map((item, index) => {
           const isActive = activeIndex === index;
           const isNested = item.level === 3;
-          // Use id as key, fallback to index for uniqueness
-          const key = item.id || `toc-${index}`;
+          // Use pathname + index for unique keys across pages
+          const uniqueKey = `${pathname}-${item.index ?? index}`;
+          const layoutId = `toc-indicator-${pathname}`;
           return (
             <li
-              key={key}
+              key={uniqueKey}
               data-state={isActive ? "active" : "inactive"}
               className={cn("relative", isNested && "pl-4")}
             >
               {isActive && (
                 <motion.span
-                  layoutId="toc-indicator"
+                  layoutId={layoutId}
                   className={cn(
                     "absolute -left-4 top-1/2 -translate-y-1/2",
                     "-ml-px h-5 w-0.5 rounded-full",

@@ -2,16 +2,16 @@ import { Tag } from "@markdoc/markdoc";
 
 import { Heading } from "../../components/Heading";
 
+// Counter for generating unique IDs per document
+let headingCounter = 0;
+
 function generateID(children, attributes) {
   if (attributes.id && typeof attributes.id === "string") {
     return attributes.id;
   }
-  return children
-    .filter((child) => typeof child === "string")
-    .join(" ")
-    .replace(/[?]/g, "")
-    .replace(/\s+/g, "-")
-    .toLowerCase();
+  // Generate unique ID based on index, not text content
+  const index = headingCounter++;
+  return `heading-${index}`;
 }
 
 export const heading = {
@@ -25,6 +25,13 @@ export const heading = {
   transform(node, config) {
     const attributes = node.transformAttributes(config);
     const children = node.transformChildren(config);
+    
+    // Reset counter when we encounter a level 1 heading (typically the document title)
+    // This ensures we start fresh for each document
+    if (attributes.level === 1) {
+      headingCounter = 0;
+    }
+    
     const id = generateID(children, attributes);
 
     return new Tag(this.render, { ...attributes, id }, children);

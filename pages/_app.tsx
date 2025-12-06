@@ -65,7 +65,7 @@ function isADRNode(node: any): boolean {
   );
 }
 
-function collectHeadings(node: any, sections: any[] = []): any[] {
+function collectHeadings(node: any, sections: any[] = [], index: { value: number } = { value: 0 }): any[] {
   if (node) {
     // Collect standard headings
     if (node.name === "Heading") {
@@ -75,6 +75,7 @@ function collectHeadings(node: any, sections: any[] = []): any[] {
         sections.push({
           ...node.attributes,
           title,
+          index: index.value++,
         });
       }
     }
@@ -86,6 +87,7 @@ function collectHeadings(node: any, sections: any[] = []): any[] {
         level: 3,
         id: generateSlug(id, title),
         title,
+        index: index.value++,
       });
       // Don't recurse into ADR children - we don't want inner content in TOC
       return sections;
@@ -93,7 +95,7 @@ function collectHeadings(node: any, sections: any[] = []): any[] {
 
     if (node.children) {
       for (const child of node.children) {
-        collectHeadings(child, sections);
+        collectHeadings(child, sections, index);
       }
     }
   }
@@ -272,7 +274,7 @@ export default function MyApp({
             </AppLayout.Main>
 
             <AppLayout.Aside>
-              <TableOfContents toc={toc} />
+              <TableOfContents toc={toc} pathname={router.pathname} />
             </AppLayout.Aside>
           </AppLayout.Body>
         </AppLayout>

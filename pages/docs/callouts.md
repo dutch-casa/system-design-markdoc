@@ -10,9 +10,9 @@ Callouts highlight important information with visual distinction. Use them to dr
 ## Syntax
 
 ```text
-{​% callout type="note" %}
+{​%​ callout type="note" %}
 Your content here.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ## Variants
@@ -26,9 +26,9 @@ This is a note callout. Use it to highlight supplementary information that reade
 {% /callout %}
 
 ```text
-{​% callout type="note" %}
+{​%​ callout type="note" %}
 This is a note callout.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ### Warning
@@ -40,9 +40,9 @@ This is a warning callout. Use it when readers should proceed with caution or be
 {% /callout %}
 
 ```text
-{​% callout type="warning" %}
+{​%​ callout type="warning" %}
 This is a warning callout.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ### Error
@@ -54,9 +54,9 @@ This is an error callout. Use it to highlight critical issues, breaking changes,
 {% /callout %}
 
 ```text
-{​% callout type="error" %}
+{​%​ callout type="error" %}
 This is an error callout.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ### Tip
@@ -68,9 +68,9 @@ This is a tip callout. Use it to share best practices, shortcuts, or helpful sug
 {% /callout %}
 
 ```text
-{​% callout type="tip" %}
+{​%​ callout type="tip" %}
 This is a tip callout.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ## Custom Titles
@@ -82,9 +82,9 @@ You can customize the callout title to better fit your content.
 {% /callout %}
 
 ```text
-{​% callout type="note" title="Did you know?" %}
+{​%​ callout type="note" title="Did you know?" %}
 You can customize the callout title.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 {% callout type="warning" title="Deprecation Notice" %}
@@ -92,9 +92,9 @@ This API will be removed in version 3.0. Please migrate to the new endpoint.
 {% /callout %}
 
 ```text
-{​% callout type="warning" title="Deprecation Notice" %}
+{​%​ callout type="warning" title="Deprecation Notice" %}
 This API will be removed in version 3.0.
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ## Rich Content
@@ -112,13 +112,13 @@ Multiple paragraphs work too.
 {% /callout %}
 
 ```text
-{​% callout type="tip" title="Pro Tips" %}
+{​%​ callout type="tip" title="Pro Tips" %}
 You can include rich content in callouts:
 
 - **Bold text** for emphasis
 - `inline code` for technical terms
 - [Links](/docs) to other pages
-{​% /callout %}
+{​%​ /callout %}
 ```
 
 ## Attributes Reference

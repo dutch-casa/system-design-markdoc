@@ -16,9 +16,9 @@ Hide detailed content behind an expandable section using the `{%​ collapsible 
 ### Syntax
 
 ```md
-{%​ collapsible title="Advanced Configuration" %}
+{​%​ collapsible title="Advanced Configuration" %}
 Content that can be hidden...
-{%​ /collapsible %}
+{​%​ /collapsible %}
 ```
 
 ### Example
@@ -62,9 +62,9 @@ Define terms inline with hover tooltips using the `{%​ glossary %}` tag.
 ### Syntax
 
 ```md
-{%​ glossary term="Event Sourcing" %}
+{​%​ glossary term="Event Sourcing" %}
 A pattern where state changes are stored as a sequence of events
-{%​ /glossary %}
+{​%​ /glossary %}
 ```
 
 ### Example
@@ -89,14 +89,14 @@ Display items in a responsive grid using the `{%​ cardgrid %}` tag.
 ### Syntax
 
 ```md
-{%​ cardgrid %}
-{%​ card icon="Zap" title="Fast" %}
+{​%​ cardgrid %}
+{​%​ card icon="Zap" title="Fast" %}
 Description here
-{%​ /card %}
-{%​ card icon="Lock" title="Secure" %}
+{​%​ /card %}
+{​%​ card icon="Lock" title="Secure" %}
 Description here
-{%​ /card %}
-{%​ /cardgrid %}
+{​%​ /card %}
+{​%​ /cardgrid %}
 ```
 
 ### Example (3 Columns)
@@ -153,13 +153,13 @@ Use any [Lucide icon](https://lucide.dev/icons) name:
 Choose 2, 3, or 4 columns (defaults to 3):
 
 ```md
-{%​ cardgrid columns=2 %}
+{​%​ cardgrid columns=2 %}
 <!-- 2 columns on desktop -->
-{%​ /cardgrid %}
+{​%​ /cardgrid %}
 
-{%​ cardgrid columns=4 %}
+{​%​ cardgrid columns=4 %}
 <!-- 4 columns on desktop -->
-{%​ /cardgrid %}
+{​%​ /cardgrid %}
 ```
 
 All grids are responsive and stack on mobile.
@@ -173,10 +173,10 @@ Display attributed quotes using the `{%​ quote %}` tag.
 ### Syntax
 
 ```md
-{%​ quote author="Martin Fowler" source="Refactoring" %}
+{​%​ quote author="Martin Fowler" source="Refactoring" %}
 Any fool can write code that a computer can understand.
 Good programmers write code that humans can understand.
-{%​ /quote %}
+{​%​ /quote %}
 ```
 
 ### Example
