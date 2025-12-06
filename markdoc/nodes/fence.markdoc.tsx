@@ -2,6 +2,7 @@ import React from "react";
 import { nodes, Tag } from "@markdoc/markdoc";
 import { CodeBlock } from "@/components/CodeBlock";
 import { Mermaid } from "@/components/Mermaid";
+import { FileTree } from "@/components/FileTree";
 
 // Custom Fence component that handles mermaid code blocks
 function FenceRenderer({
@@ -27,11 +28,15 @@ function FenceRenderer({
         }
         return "";
       })
-      .join("");
+      .join("\n");
   }
 
   if (lang === "mermaid") {
     return <Mermaid chart={code} />;
+  }
+
+  if (lang === "filetree") {
+    return <FileTree content={code} />;
   }
 
   return <CodeBlock data-language={lang}>{code}</CodeBlock>;
@@ -51,7 +56,7 @@ function extractTextContent(children: unknown): string {
         }
         return "";
       })
-      .join("");
+      .join("\n");
   }
   if (children && typeof children === "object" && "props" in children) {
     const obj = children as { props?: { children?: unknown } };

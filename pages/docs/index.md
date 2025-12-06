@@ -15,13 +15,13 @@ Content is written in `.md` files using standard Markdown syntax, enhanced with 
 
 Pages are created by adding `.md` files to the `pages/` directory:
 
-```text
+```filetree
 pages/
-  index.md          → /
+  index.md
   docs/
-    index.md        → /docs
-    callouts.md     → /docs/callouts
-    math.md         → /docs/math
+    index.md
+    callouts.md
+    math.md
 ```
 
 ### Frontmatter
@@ -157,7 +157,7 @@ Beyond standard Markdown, this system provides custom blocks:
 | Block                            | Description                                          |
 | -------------------------------- | ---------------------------------------------------- |
 | [Callouts](/docs/callouts)       | Highlighted notes, warnings, tips, and errors        |
-| [Code Blocks](/docs/code-blocks) | Syntax-highlighted code, terminal, diffs, file trees |
+| [Code Blocks](/docs/code-blocks) | Syntax-highlighted code, diffs, file trees |
 
 ### Interactive
 

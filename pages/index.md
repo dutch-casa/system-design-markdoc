@@ -33,15 +33,15 @@ bun dev
 
 ## Project Structure
 
-```
-pages/           # Markdown content files
-components/      # React components
-  ui/            # Base UI components (shadcn)
-markdoc/         # Markdoc configuration
-  tags/          # Custom block tags
-  nodes/         # Node overrides
-lib/             # Utilities and shared code
-public/          # Static assets
+```filetree
+pages/
+components/
+  ui/
+markdoc/
+  tags/
+  nodes/
+lib/
+public/
 ```
 
 {% callout type="tip" %}

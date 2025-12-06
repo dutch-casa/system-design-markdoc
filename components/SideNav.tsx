@@ -183,31 +183,31 @@ function SideNavContent({
       {...props}
     >
       <div className="flex-1 px-3 py-4">
-        {/* Version Switcher */}
-        {hasVersions && (
-          <div className="mb-4 px-3">
-            <VersionSwitcher
-              versions={versionConfig.versions}
-              current={currentVersion}
-              onVersionChange={handleVersionChange}
-            />
-          </div>
-        )}
+      {/* Version Switcher */}
+      {hasVersions && (
+        <div className="mb-4 px-3">
+          <VersionSwitcher
+            versions={versionConfig.versions}
+            current={currentVersion}
+            onVersionChange={handleVersionChange}
+          />
+        </div>
+      )}
 
-        {/* Navigation Sections */}
-        {NAV_SECTIONS.map((item) => {
-          const hasActiveLink = item.links.some(
-            (link) => router.pathname === link.href
-          );
-          return (
-            <NavSectionItem
-              key={item.title}
-              item={item}
-              defaultOpen={hasActiveLink || true}
-              onNavigate={onNavigate}
-            />
-          );
-        })}
+      {/* Navigation Sections */}
+      {NAV_SECTIONS.map((item) => {
+        const hasActiveLink = item.links.some(
+          (link) => router.pathname === link.href
+        );
+        return (
+          <NavSectionItem
+            key={item.title}
+            item={item}
+            defaultOpen={hasActiveLink || true}
+            onNavigate={onNavigate}
+          />
+        );
+      })}
       </div>
 
       {/* Footer with Theme Toggle */}

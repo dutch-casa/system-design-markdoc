@@ -2,6 +2,7 @@ import { CardGrid } from "@/components/CardGrid";
 
 export const cardgrid = {
   render: CardGrid.Root,
+  children: ["card"],
   attributes: {
     columns: {
       type: Number,
@@ -13,6 +14,7 @@ export const cardgrid = {
 
 export const card = {
   render: CardGrid.Card,
+  children: ["paragraph", "tag", "list"],
   attributes: {
     icon: {
       type: String,
@@ -22,4 +24,3 @@ export const card = {
     },
   },
 };
-

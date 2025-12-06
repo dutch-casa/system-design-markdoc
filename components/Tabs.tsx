@@ -55,7 +55,22 @@ function Root({
   className,
   ...props
 }: RootProps) {
-  const [activeTab, setActiveTab] = useState(defaultValue ?? "");
+  // If no defaultValue, try to get it from first tab child
+  const firstTabValue = React.useMemo(() => {
+    if (defaultValue) return defaultValue;
+    const childArray = React.Children.toArray(children);
+    const firstTab = childArray.find(
+      (child): child is React.ReactElement =>
+        React.isValidElement(child) && (child.props as any).label
+    );
+    if (firstTab) {
+      const label = (firstTab.props as any).label || "";
+      return label.toLowerCase().replace(/\s+/g, "-");
+    }
+    return "";
+  }, [defaultValue, children]);
+
+  const [activeTab, setActiveTab] = useState(firstTabValue);
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
@@ -178,12 +193,16 @@ type ContentProps = ContentOwnProps &
 function Content({
   asChild,
   value,
+  label,
   children,
   className,
   ...props
-}: ContentProps) {
+}: ContentProps & { label?: string }) {
   const { activeTab } = useTabsContext();
-  const isActive = activeTab === value;
+  // Generate value from label if not provided
+  const tabValue =
+    value || (label ? label.toLowerCase().replace(/\s+/g, "-") : "");
+  const isActive = activeTab === tabValue;
 
   if (!isActive) return null;
 
@@ -214,22 +233,32 @@ interface TabsProps {
 }
 
 function TabsComposed({ children }: TabsProps) {
-  // Extract tabs from children to auto-generate IDs
-  const childArray = React.Children.toArray(children);
-  const firstTabId = childArray.length > 0 ? `tab-0` : "";
+  const tabs = React.Children.toArray(children).filter(
+    (child): child is React.ReactElement => React.isValidElement(child)
+  );
+
+  const tabsWithValues = tabs.map((tab) => {
+    const label = (tab.props as any).label || "";
+    const value =
+      (tab.props as any).value || label.toLowerCase().replace(/\s+/g, "-");
+    const tabChildren = (tab.props as any).children;
+    return { label, value, children: tabChildren };
+  });
+
+  const firstValue = tabsWithValues.length > 0 ? tabsWithValues[0].value : "";
 
   return (
-    <Root defaultValue={firstTabId}>
+    <Root defaultValue={firstValue}>
       <List>
-        {childArray.map((_, index) => (
-          <Trigger key={`trigger-${index}`} value={`tab-${index}`}>
-            Tab {index + 1}
+        {tabsWithValues.map(({ label, value }) => (
+          <Trigger key={value} value={value}>
+            {label}
           </Trigger>
         ))}
       </List>
-      {childArray.map((child, index) => (
-        <Content key={`content-${index}`} value={`tab-${index}`}>
-          {child}
+      {tabsWithValues.map(({ value, label, children: tabChildren }) => (
+        <Content key={value} value={value} label={label}>
+          {tabChildren}
         </Content>
       ))}
     </Root>

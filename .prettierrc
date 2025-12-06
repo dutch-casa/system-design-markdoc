@@ -1,0 +1,15 @@
+{
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown",
+        "proseWrap": "preserve",
+        "printWidth": 9999,
+        "tabWidth": 2,
+        "useTabs": false
+      }
+    }
+  ]
+}
+

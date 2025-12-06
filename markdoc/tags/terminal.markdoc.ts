@@ -7,6 +7,8 @@ export const terminal = {
       type: String,
       default: "$",
     },
+    language: {
+      type: String,
+    },
   },
 };
-

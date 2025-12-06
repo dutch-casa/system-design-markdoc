@@ -159,9 +159,9 @@ function Root({
         {children ?? (
           <>
             <div className="flex-1 px-3 py-4">
-              {groups.map((group) => (
-                <Group key={group.name} group={group} />
-              ))}
+            {groups.map((group) => (
+              <Group key={group.name} group={group} />
+            ))}
             </div>
             <Footer />
           </>

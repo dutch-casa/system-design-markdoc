@@ -219,64 +219,27 @@ If a language isn't highlighted, check the [Prism.js documentation](https://pris
 
 ---
 
-## Terminal Output
-
-Display terminal sessions with command prompts and colored output using the `{%​ terminal %}` tag.
-
-### Syntax
-
-```md
-{%​ terminal %}
-$ npm install
-✓ Installed 42 packages
-$ npm run build
-✓ Build completed
-{%​ /terminal %}
-```
-
-### Example
-
-{% terminal %}
-$ bun install
-✓ Installed dependencies
-$ bun dev
-→ Starting development server...
-✓ Server running on http://localhost:3000
-{% /terminal %}
-
-### Output Styling
-
-Terminal output is automatically styled based on symbols:
-
-| Symbol | Style | Use Case |
-| ------ | ----- | -------- |
-| `$` | Prompt | Command line |
-| `✓` `✔` | Green | Success messages |
-| `✗` `✘` `×` | Red | Error messages |
-| `⚠` `!` | Amber | Warnings |
-| `→` `›` `▸` | Blue | Info messages |
-
-### Custom Prompt
-
-Change the prompt character:
-
-```md
-{%​ terminal prompt=">" %}
-> dir
-> echo "Hello"
-{%​ /terminal %}
-```
-
----
-
 ## File Trees
 
-Visualize directory structures using the `{%​ filetree %}` tag. Folders end with `/`, files without.
+Visualize directory structures using code fence syntax with `filetree` language. Folders end with `/`, files without.
 
 ### Syntax
 
 ```md
-{%​ filetree %}
+\`\`\`filetree
+src/
+​  components/
+​    Button.tsx
+​    Input.tsx
+​  utils/
+​    helpers.ts
+​  index.ts
+\`\`\`
+```
+
+### Simple Example
+
+```filetree
 src/
   components/
     Button.tsx
@@ -284,12 +247,11 @@ src/
   utils/
     helpers.ts
   index.ts
-{%​ /filetree %}
 ```
 
-### Example
+### Complex Example
 
-{% filetree %}
+```filetree
 src/
   components/
     auth/
@@ -304,8 +266,8 @@ src/
   app/
     layout.tsx
     page.tsx
-  middleware.ts
-{% /filetree %}
+    middleware.ts
+```
 
 ### Indentation
 
@@ -315,39 +277,117 @@ Use 2 spaces per nesting level. Folders are distinguished by a trailing `/`.
 
 ## Diffs
 
-Show code changes with the `{%​ diff %}` tag. Lines starting with `-` are removed (red), lines starting with `+` are added (green).
+Show side-by-side code changes with the `{%​ diff %}` tag. Use code fences inside the diff tag - the first fence is the original version, the second is the new version.
 
-### Syntax
 
-````md
-{%​ diff language="typescript" %}
-- const old = "implementation";
-+ const new = "implementation";
-  const unchanged = "stays";
-{%​ /diff %}
-````
 
 ### Example
 
 {% diff language="javascript" %}
-- function greet(name) {
--   return "Hello " + name;
-+ function greet(name, formal = false) {
-+   const prefix = formal ? "Good day" : "Hello";
-+   return `${prefix}, ${name}!`;
+```javascript
+// Simple greeting function
+function greet(name) {
+  if (!name) {
+    return "Hello, stranger!";
   }
+  return "Hello " + name;
+}
+
+// Usage example
+const message = greet("Alice");
+console.log(message);
+```
+```javascript
+// Enhanced greeting function with formality option
+function greet(name, formal = false) {
+  if (!name) {
+    return formal ? "Good day, stranger!" : "Hello, stranger!";
+  }
+  
+  const prefix = formal ? "Good day" : "Hello";
+  const punctuation = formal ? "." : "!";
+  
+  return `${prefix}, ${name}${punctuation}`;
+}
+
+// Usage examples
+const casualMessage = greet("Alice");
+const formalMessage = greet("Alice", true);
+console.log(casualMessage);  // "Hello, Alice!"
+console.log(formalMessage);  // "Good day, Alice."
+```
 {% /diff %}
 
 ### With Language Syntax
 
-Add a `language` attribute for syntax highlighting within the diff:
+Add a `language` attribute for syntax highlighting within the diff. The first code fence is the original, the second is the new version:
 
 {% diff language="typescript" %}
-- interface User {
--   name: string;
-+ interface User {
-+   firstName: string;
-+   lastName: string;
-    email: string;
+```typescript
+// User interface definition
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+}
+
+// User service class
+class UserService {
+  private users: User[] = [];
+  
+  createUser(user: User): User {
+    this.users.push(user);
+    return user;
   }
+  
+  getUserById(id: number): User | undefined {
+    return this.users.find(u => u.id === id);
+  }
+}
+```
+```typescript
+// Enhanced user interface with separate name fields
+interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  age?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Enhanced user service with validation
+class UserService {
+  private users: User[] = [];
+  
+  createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): User {
+    const now = new Date();
+    const user: User = {
+      ...userData,
+      id: this.users.length + 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+    
+    this.validateUser(user);
+    this.users.push(user);
+    return user;
+  }
+  
+  getUserById(id: number): User | undefined {
+    return this.users.find(u => u.id === id);
+  }
+  
+  private validateUser(user: User): void {
+    if (!user.firstName || !user.lastName) {
+      throw new Error("First and last name are required");
+    }
+    if (!user.email.includes("@")) {
+      throw new Error("Invalid email address");
+    }
+  }
+}
+```
 {% /diff %}

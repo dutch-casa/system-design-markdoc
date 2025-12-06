@@ -144,7 +144,7 @@ Full-text search engine for fast, relevant search results.
 Use any [Lucide icon](https://lucide.dev/icons) name:
 
 - **Common**: `Check`, `X`, `AlertTriangle`, `Info`, `HelpCircle`
-- **Tech**: `Code`, `Terminal`, `Database`, `Server`, `Cloud`
+- **Tech**: `Code`, `Database`, `Server`, `Cloud`
 - **Actions**: `Play`, `Pause`, `Download`, `Upload`, `Send`
 - **UI**: `Menu`, `Settings`, `User`, `Home`, `Search`
 

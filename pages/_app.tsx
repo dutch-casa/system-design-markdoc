@@ -26,7 +26,14 @@ import {
 
 import "prismjs";
 import "prismjs/components/prism-bash.min";
-import "prismjs/themes/prism.css";
+import "prismjs/components/prism-javascript.min";
+import "prismjs/components/prism-typescript.min";
+import "prismjs/components/prism-python.min";
+import "prismjs/components/prism-json.min";
+import "prismjs/components/prism-yaml.min";
+import "prismjs/components/prism-css.min";
+import "prismjs/components/prism-markup.min";
+import "prismjs/themes/prism-tomorrow.css";
 
 import "katex/dist/katex.min.css";
 
