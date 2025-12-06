@@ -195,12 +195,7 @@ interface MainProps extends ComponentPropsWithoutRef<"main"> {
   children: ReactNode;
 }
 
-function Main({
-  asChild = false,
-  children,
-  className,
-  ...props
-}: MainProps) {
+function Main({ asChild = false, children, className, ...props }: MainProps) {
   const Comp = asChild ? Slot : "main";
 
   return (

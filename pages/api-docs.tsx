@@ -211,7 +211,9 @@ function getOperationsByTag(
 // -----------------------------------------------------------------------------
 
 function scrollMainToTop() {
-  const mainContent = document.querySelector('[data-slot="openapi-layout.main"]');
+  const mainContent = document.querySelector(
+    '[data-slot="openapi-layout.main"]'
+  );
   if (mainContent) {
     mainContent.scrollTo({ top: 0, behavior: "instant" });
   }
@@ -229,25 +231,35 @@ function APIDocsHeader() {
       <TopNavLeft>
         <TopNavMenuTrigger />
         <TopNavBrand asChild>
-          <Link href="/" onClick={scrollMainToTop}>SysDoc</Link>
+          <Link href="/" onClick={scrollMainToTop}>
+            SysDoc
+          </Link>
         </TopNavBrand>
       </TopNavLeft>
       <TopNavLinks>
         <TopNavLink asChild>
-          <Link href="/docs" onClick={scrollMainToTop}>Docs</Link>
+          <Link href="/docs" onClick={scrollMainToTop}>
+            Docs
+          </Link>
         </TopNavLink>
         <TopNavLink asChild>
-          <Link href="/api-docs" onClick={scrollMainToTop}>API</Link>
+          <Link href="/api-docs" onClick={scrollMainToTop}>
+            API
+          </Link>
         </TopNavLink>
         <TopNavSearch />
       </TopNavLinks>
       {/* Mobile actions: nav links + search icon */}
       <TopNavActions className="md:hidden">
         <TopNavLink asChild>
-          <Link href="/docs" onClick={scrollMainToTop}>Docs</Link>
+          <Link href="/docs" onClick={scrollMainToTop}>
+            Docs
+          </Link>
         </TopNavLink>
         <TopNavLink asChild>
-          <Link href="/api-docs" onClick={scrollMainToTop}>API</Link>
+          <Link href="/api-docs" onClick={scrollMainToTop}>
+            API
+          </Link>
         </TopNavLink>
         <TopNavSearchIcon />
       </TopNavActions>

@@ -68,7 +68,11 @@ function Root({
         as={as}
         asChild={asChild}
         data-slot="openapi-header"
-        className={cn("border-b border-border", "px-4 py-6 md:px-8 md:py-10", className)}
+        className={cn(
+          "border-b border-border",
+          "px-4 py-6 md:px-8 md:py-10",
+          className
+        )}
         {...props}
       >
         {children ?? (

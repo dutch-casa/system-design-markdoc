@@ -188,7 +188,8 @@ function Group({
   className,
   ...props
 }: GroupProps) {
-  const { activeEndpoint, onEndpointClick, onNavigate } = useOpenAPISidebarContext();
+  const { activeEndpoint, onEndpointClick, onNavigate } =
+    useOpenAPISidebarContext();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const prefersReducedMotion = useReducedMotion();
 

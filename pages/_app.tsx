@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -104,15 +104,25 @@ function scrollMainToTop() {
   }
 }
 
-function useSidebarNavigate() {
+// -----------------------------------------------------------------------------
+// DocsSidebar - SideNav with mobile close handling
+// -----------------------------------------------------------------------------
+
+function DocsSidebar({
+  versionConfig,
+}: {
+  versionConfig?: typeof DOCS_VERSION_CONFIG;
+}) {
   const { setSidebarOpen, isMobile } = useAppLayout();
 
-  return useCallback(() => {
+  const handleNavigate = useCallback(() => {
     scrollMainToTop();
     if (isMobile) {
       setSidebarOpen(false);
     }
   }, [setSidebarOpen, isMobile]);
+
+  return <SideNav versionConfig={versionConfig} onNavigate={handleNavigate} />;
 }
 
 // -----------------------------------------------------------------------------
@@ -234,7 +244,7 @@ export default function MyApp({
 
         <AppLayout.Body>
           <AppLayout.Sidebar>
-            <SideNav
+            <DocsSidebar
               versionConfig={
                 SHOW_DOCS_VERSIONS ? DOCS_VERSION_CONFIG : undefined
               }
