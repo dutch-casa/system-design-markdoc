@@ -252,6 +252,63 @@ pie title Traffic Sources
 {​%​ /mermaid %}
 ```
 
+## Architecture Diagrams
+
+Architecture diagrams show relationships between services and resources in cloud or CI/CD deployments. Services are connected by edges and can be organized into groups.
+
+{% mermaid %}
+architecture-beta
+group public_api(cloud)[Public API]
+group private_api(cloud)[Private API] in public_api
+
+service internet(internet)[Internet]
+service api_gateway(server)[API Gateway] in public_api
+service auth_service(server)[Auth Service] in private_api
+service app_service(server)[App Service] in private_api
+service database1(database)[Primary DB] in private_api
+service cache(disk)[Cache] in private_api
+
+internet:R --> L:api_gateway
+api_gateway:R --> L:auth_service
+api_gateway:R --> L:app_service
+app_service:B --> T:database1
+app_service:B --> T:cache
+{% /mermaid %}
+
+```text
+{​%​ mermaid %}
+architecture-beta
+group public_api(cloud)[Public API]
+group private_api(cloud)[Private API] in public_api
+
+service internet(internet)[Internet]
+service api_gateway(server)[API Gateway] in public_api
+service auth_service(server)[Auth Service] in private_api
+service app_service(server)[App Service] in private_api
+service database1(database)[Primary DB] in private_api
+service cache(disk)[Cache] in private_api
+
+internet:R --> L:api_gateway
+api_gateway:R --> L:auth_service
+api_gateway:R --> L:app_service
+app_service:B --> T:database1
+app_service:B --> T:cache
+{​%​ /mermaid %}
+```
+
+### Syntax
+
+Architecture diagrams use `architecture-beta` as the diagram type. Key components:
+
+- **Groups**: `group {id}({icon})[{label}] (in {parent})?`
+- **Services**: `service {id}({icon})[{label}] (in {parent})?`
+- **Edges**: `{serviceId}:{T|B|L|R} {<}?--{>}? {T|B|L|R}:{serviceId}`
+- **Junctions**: `junction {id} (in {parent})?`
+
+Edge directions (`T`, `B`, `L`, `R`) specify which side of the service the edge connects to. Arrows (`<`, `>`) indicate direction.
+
+For complete syntax, see the [Mermaid Architecture Diagrams documentation](https://mermaid.js.org/syntax/architecture.html).
+
 ## Interaction
 
 {% callout type="tip" %}
@@ -269,5 +326,6 @@ Diagrams support pan and zoom. Click and drag to pan, use the controls or scroll
 | `stateDiagram-v2`     | State machines                     |
 | `gantt`               | Project timelines                  |
 | `pie`                 | Pie charts                         |
+| `architecture-beta`   | Cloud/CI/CD architecture diagrams |
 
 For complete syntax, see the [Mermaid documentation](https://mermaid.js.org/intro/).
