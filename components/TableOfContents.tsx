@@ -104,10 +104,12 @@ export function TableOfContents({ toc }: { toc: TocItem[] }) {
 
   return (
     <nav
+      data-slot="table-of-contents"
       className={cn(
-        "sticky top-[calc(var(--top-nav-height,65px)+1.5rem)]",
-        "max-h-[calc(100vh-var(--top-nav-height,65px)-3rem)]",
-        "w-[200px] shrink-0 self-start",
+        "hidden lg:block",
+        "sticky top-[calc(var(--top-nav-height)+1.5rem)]",
+        "max-h-[calc(100vh-var(--top-nav-height)-3rem)]",
+        "w-[var(--toc-width)] shrink-0 self-start",
         "overflow-y-auto"
       )}
     >

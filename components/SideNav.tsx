@@ -1,10 +1,18 @@
-import { useState, useEffect } from "react";
+import * as React from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { NAV_SECTIONS, type NavSection } from "@/lib/navigation";
+import { VersionSwitcher } from "@/components/VersionSwitcher";
+import { rewritePathVersion, type VersionConfig } from "@/lib/versioning";
+
+// -----------------------------------------------------------------------------
+// Hooks
+// -----------------------------------------------------------------------------
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -21,12 +29,18 @@ function useReducedMotion() {
   return prefersReducedMotion;
 }
 
+// -----------------------------------------------------------------------------
+// NavSectionItem
+// -----------------------------------------------------------------------------
+
 function NavSectionItem({
   item,
   defaultOpen,
+  onNavigate,
 }: {
   item: NavSection;
   defaultOpen: boolean;
+  onNavigate?: () => void;
 }) {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
@@ -36,6 +50,10 @@ function NavSectionItem({
   const transition = prefersReducedMotion
     ? { duration: 0 }
     : { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const };
+
+  const handleLinkClick = useCallback(() => {
+    onNavigate?.();
+  }, [onNavigate]);
 
   return (
     <div data-slot="nav.section" className="mb-1">
@@ -93,6 +111,7 @@ function NavSectionItem({
                   >
                     <Link
                       href={link.href}
+                      onClick={handleLinkClick}
                       data-state={isActive ? "active" : "inactive"}
                       className="block rounded-lg px-3 py-2 text-sm text-foreground/60 transition-colors duration-150 ease-out hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:font-medium motion-reduce:transition-none"
                     >
@@ -109,15 +128,51 @@ function NavSectionItem({
   );
 }
 
-export function SideNav() {
+// -----------------------------------------------------------------------------
+// SideNavContent (inner content, no positioning)
+// -----------------------------------------------------------------------------
+
+interface SideNavContentProps extends React.ComponentProps<"div"> {
+  /** Optional version configuration for docs versioning */
+  versionConfig?: VersionConfig;
+  /** Callback when a navigation link is clicked */
+  onNavigate?: () => void;
+}
+
+function SideNavContent({ versionConfig, className, onNavigate, ...props }: SideNavContentProps) {
   const router = useRouter();
 
+  const handleVersionChange = useCallback(
+    (version: string) => {
+      const newPath = rewritePathVersion(router.asPath, version);
+      router.push(newPath);
+      onNavigate?.();
+    },
+    [router, onNavigate]
+  );
+
+  // Determine current version from path or default to latest
+  const currentVersion = versionConfig?.current ?? "";
+  const hasVersions = versionConfig && versionConfig.versions.length > 1;
+
   return (
-    <nav
-      data-slot="sidebar"
-      aria-label="Documentation navigation"
-      className="sticky top-[var(--top-nav-height)] h-[calc(100vh-var(--top-nav-height))] w-64 shrink-0 overflow-y-auto border-r border-border bg-background px-3 py-4"
+    <div
+      data-slot="side-nav.content"
+      className={cn("flex flex-col px-3 py-4", className)}
+      {...props}
     >
+      {/* Version Switcher */}
+      {hasVersions && (
+        <div className="mb-4 px-3">
+          <VersionSwitcher
+            versions={versionConfig.versions}
+            current={currentVersion}
+            onVersionChange={handleVersionChange}
+          />
+        </div>
+      )}
+
+      {/* Navigation Sections */}
       {NAV_SECTIONS.map((item) => {
         const hasActiveLink = item.links.some(
           (link) => router.pathname === link.href
@@ -127,9 +182,39 @@ export function SideNav() {
             key={item.title}
             item={item}
             defaultOpen={hasActiveLink || true}
+            onNavigate={onNavigate}
           />
         );
       })}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// SideNav (wrapper with positioning for standalone use)
+// -----------------------------------------------------------------------------
+
+interface SideNavProps extends React.ComponentProps<"nav"> {
+  /** Optional version configuration for docs versioning */
+  versionConfig?: VersionConfig;
+  /** Callback when a navigation link is clicked */
+  onNavigate?: () => void;
+}
+
+function SideNav({ versionConfig, className, onNavigate, ...props }: SideNavProps) {
+  return (
+    <nav
+      data-slot="side-nav"
+      aria-label="Documentation navigation"
+      className={cn(
+        "h-full w-full overflow-y-auto bg-background",
+        className
+      )}
+      {...props}
+    >
+      <SideNavContent versionConfig={versionConfig} onNavigate={onNavigate} />
     </nav>
   );
 }
+
+export { SideNav, SideNavContent };

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { SearchIcon } from "lucide-react";
+import { MenuIcon, SearchIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
 // -----------------------------------------------------------------------------
@@ -11,6 +12,7 @@ import { Kbd } from "@/components/ui/kbd";
 
 type TopNavContextValue = {
   onOpenSearch: () => void;
+  onOpenMenu?: () => void;
 };
 
 const TopNavContext = React.createContext<TopNavContextValue | null>(null);
@@ -29,21 +31,24 @@ function useTopNavContext() {
 
 type TopNavProps = React.ComponentProps<"nav"> & {
   children?: React.ReactNode;
+  onOpenMenu?: () => void;
 };
 
-function TopNav({ className, children, ...props }: TopNavProps) {
+function TopNav({ className, children, onOpenMenu, ...props }: TopNavProps) {
   const handleOpenSearch = React.useCallback(() => {
     window.dispatchEvent(new CustomEvent("open-command-palette"));
   }, []);
 
   return (
-    <TopNavContext.Provider value={{ onOpenSearch: handleOpenSearch }}>
+    <TopNavContext.Provider
+      value={{ onOpenSearch: handleOpenSearch, onOpenMenu }}
+    >
       <nav
         data-slot="top-nav"
         className={cn(
           "fixed inset-x-0 top-0 z-50",
           "flex h-[var(--top-nav-height)] items-center justify-between gap-4",
-          "px-6",
+          "px-4 md:px-6",
           "bg-background/80 backdrop-blur-xl backdrop-saturate-150",
           "border-b border-border/50",
           "shadow-sm",
@@ -54,6 +59,45 @@ function TopNav({ className, children, ...props }: TopNavProps) {
         {children}
       </nav>
     </TopNavContext.Provider>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// TopNav Menu Trigger (mobile hamburger)
+// -----------------------------------------------------------------------------
+
+type TopNavMenuTriggerProps = Omit<
+  React.ComponentProps<typeof Button>,
+  "children"
+> & {
+  asChild?: boolean;
+};
+
+function TopNavMenuTrigger({
+  className,
+  asChild = false,
+  ...props
+}: TopNavMenuTriggerProps) {
+  const { onOpenMenu } = useTopNavContext();
+
+  if (!onOpenMenu) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="button"
+      data-slot="top-nav.menu-trigger"
+      variant="ghost"
+      size="icon"
+      onClick={onOpenMenu}
+      className={cn("md:hidden", className)}
+      aria-label="Open navigation menu"
+      asChild={asChild}
+      {...props}
+    >
+      <MenuIcon className="size-5" />
+    </Button>
   );
 }
 
@@ -91,6 +135,24 @@ function TopNavBrand({
 }
 
 // -----------------------------------------------------------------------------
+// TopNav Left (container for menu trigger + brand)
+// -----------------------------------------------------------------------------
+
+type TopNavLeftProps = React.ComponentProps<"div">;
+
+function TopNavLeft({ className, children, ...props }: TopNavLeftProps) {
+  return (
+    <div
+      data-slot="top-nav.left"
+      className={cn("flex items-center gap-2", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // TopNav Links
 // -----------------------------------------------------------------------------
 
@@ -100,7 +162,7 @@ function TopNavLinks({ className, children, ...props }: TopNavLinksProps) {
   return (
     <div
       data-slot="top-nav.links"
-      className={cn("flex items-center gap-4", className)}
+      className={cn("hidden items-center gap-4 md:flex", className)}
       {...props}
     >
       {children}
@@ -142,7 +204,7 @@ function TopNavLink({
 }
 
 // -----------------------------------------------------------------------------
-// TopNav Search
+// TopNav Search (full button with text)
 // -----------------------------------------------------------------------------
 
 type TopNavSearchProps = Omit<React.ComponentProps<"button">, "children"> & {
@@ -181,6 +243,34 @@ function TopNavSearch({
 }
 
 // -----------------------------------------------------------------------------
+// TopNav Search Icon (icon-only button for mobile)
+// -----------------------------------------------------------------------------
+
+type TopNavSearchIconProps = Omit<
+  React.ComponentProps<typeof Button>,
+  "children"
+>;
+
+function TopNavSearchIcon({ className, ...props }: TopNavSearchIconProps) {
+  const { onOpenSearch } = useTopNavContext();
+
+  return (
+    <Button
+      type="button"
+      data-slot="top-nav.search-icon"
+      variant="ghost"
+      size="icon"
+      onClick={onOpenSearch}
+      className={cn("size-9", className)}
+      aria-label="Open search"
+      {...props}
+    >
+      <SearchIcon className="size-5" />
+    </Button>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // TopNav Actions (right-side container)
 // -----------------------------------------------------------------------------
 
@@ -204,9 +294,12 @@ function TopNavActions({ className, children, ...props }: TopNavActionsProps) {
 
 export {
   TopNav,
+  TopNavMenuTrigger,
+  TopNavLeft,
   TopNavBrand,
   TopNavLinks,
   TopNavLink,
   TopNavSearch,
+  TopNavSearchIcon,
   TopNavActions,
 };

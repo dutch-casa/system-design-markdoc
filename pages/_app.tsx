@@ -3,16 +3,25 @@ import Head from "next/head";
 import Link from "next/link";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { AppLayout, useAppLayout } from "@/components/AppLayout";
 import { CommandDialog } from "@/components/CommandDialog";
 import { SideNav } from "@/components/SideNav";
 import { TableOfContents } from "@/components/TableOfContents";
 import {
   TopNav,
+  TopNavMenuTrigger,
+  TopNavLeft,
   TopNavBrand,
   TopNavLinks,
   TopNavLink,
   TopNavSearch,
+  TopNavActions,
+  TopNavSearchIcon,
 } from "@/components/TopNav";
+import {
+  DOCS_VERSION_CONFIG,
+  SHOW_DOCS_VERSIONS,
+} from "@/lib/versions.generated";
 
 import "prismjs";
 import "prismjs/components/prism-bash.min";
@@ -27,7 +36,7 @@ import type { MarkdocNextJsPageProps } from "@markdoc/next.js";
 
 const queryClient = new QueryClient();
 
-const TITLE = "Architecture";
+const TITLE = "SysDoc";
 const DESCRIPTION = "System architecture documentation";
 
 function generateSlug(id: string, title: string): string {
@@ -83,6 +92,80 @@ function collectHeadings(node: any, sections: any[] = []): any[] {
 
   return sections;
 }
+
+// -----------------------------------------------------------------------------
+// Navigation Handlers
+// -----------------------------------------------------------------------------
+
+function scrollMainToTop() {
+  const mainContent = document.querySelector('[data-slot="app-layout.main"]');
+  if (mainContent) {
+    mainContent.scrollTo({ top: 0, behavior: "instant" });
+  }
+}
+
+function useSidebarNavigate() {
+  const { setSidebarOpen, isMobile } = useAppLayout();
+
+  return useCallback(() => {
+    scrollMainToTop();
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [setSidebarOpen, isMobile]);
+}
+
+// -----------------------------------------------------------------------------
+// AppHeader - TopNav with mobile menu integration
+// -----------------------------------------------------------------------------
+
+function AppHeader() {
+  const { toggleSidebar } = useAppLayout();
+
+  return (
+    <TopNav onOpenMenu={toggleSidebar}>
+      <TopNavLeft>
+        <TopNavMenuTrigger />
+        <TopNavBrand asChild>
+          <Link href="/" onClick={scrollMainToTop}>
+            SysDoc
+          </Link>
+        </TopNavBrand>
+      </TopNavLeft>
+      <TopNavLinks>
+        <TopNavLink asChild>
+          <Link href="/docs" onClick={scrollMainToTop}>
+            Docs
+          </Link>
+        </TopNavLink>
+        <TopNavLink asChild>
+          <Link href="/api-docs" onClick={scrollMainToTop}>
+            API
+          </Link>
+        </TopNavLink>
+        <TopNavSearch />
+      </TopNavLinks>
+      {/* Mobile actions: nav links + search icon */}
+      <TopNavActions className="md:hidden">
+        <TopNavLink asChild>
+          <Link href="/docs" onClick={scrollMainToTop}>
+            Docs
+          </Link>
+        </TopNavLink>
+        <TopNavLink asChild>
+          <Link href="/api-docs" onClick={scrollMainToTop}>
+            API
+          </Link>
+        </TopNavLink>
+        <TopNavSearchIcon />
+      </TopNavActions>
+    </TopNav>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// Main App
+// -----------------------------------------------------------------------------
 
 export type MyAppProps = MarkdocNextJsPageProps;
 
@@ -141,65 +224,34 @@ export default function MyApp({
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <TopNav>
-        <TopNavBrand asChild>
-          <Link href="/">Architecture</Link>
-        </TopNavBrand>
-        <TopNavLinks>
-          <TopNavLink asChild>
-            <Link href="/docs">Docs</Link>
-          </TopNavLink>
-          <TopNavLink asChild>
-            <Link href="/api-docs">API</Link>
-          </TopNavLink>
-          <TopNavSearch />
-        </TopNavLinks>
-      </TopNav>
-      <CommandDialog />
-      <div className="page-layout">
-        <SideNav />
-        <main className="page-content">
-          <div className="page-content-wrapper">
-            <Component {...pageProps} />
-          </div>
-        </main>
-        <TableOfContents toc={toc} />
-      </div>
-      <style jsx>{`
-        .page-layout {
-          position: fixed;
-          top: var(--top-nav-height, 65px);
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-          width: 100vw;
-          height: calc(100vh - var(--top-nav-height, 65px));
-        }
 
-        .page-content {
-          flex: 1;
-          overflow-y: auto;
-          overflow-x: hidden;
-          width: 100%;
-        }
+      <AppLayout>
+        <AppLayout.Header>
+          <AppHeader />
+        </AppLayout.Header>
 
-        .page-content-wrapper {
-          max-width: var(--content-max-width, 800px);
-          margin: 0 auto;
-          padding: var(--spacing-10, 2.5rem) var(--spacing-8, 2rem)
-            var(--spacing-12, 3rem);
-          padding-bottom: calc(var(--spacing-12, 3rem) + 100vh);
-        }
+        <CommandDialog />
 
-        .page-content-wrapper :global(h1:first-child) {
-          margin-top: 0;
-        }
+        <AppLayout.Body>
+          <AppLayout.Sidebar>
+            <SideNav
+              versionConfig={
+                SHOW_DOCS_VERSIONS ? DOCS_VERSION_CONFIG : undefined
+              }
+            />
+          </AppLayout.Sidebar>
 
-        .page-content-wrapper :global(p:last-child) {
-          margin-bottom: 0;
-        }
-      `}</style>
+          <AppLayout.Main className="page-content">
+            <AppLayout.MainContent>
+              <Component {...pageProps} />
+            </AppLayout.MainContent>
+          </AppLayout.Main>
+
+          <AppLayout.Aside>
+            <TableOfContents toc={toc} />
+          </AppLayout.Aside>
+        </AppLayout.Body>
+      </AppLayout>
     </QueryClientProvider>
   );
 }

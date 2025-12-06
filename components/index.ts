@@ -1,5 +1,6 @@
 export * from "./ADR";
 export * from "./AnchorLink";
+export * from "./AppLayout";
 export * from "./Backlinks";
 export * from "./Callout";
 export * from "./CodeBlock";

@@ -1,141 +1,156 @@
 /**
- * Git-based versioning system for architecture documentation.
- * Uses git tags to manage different versions of documentation.
+ * Versioning System - Client-Safe Module
+ *
+ * Types and utilities that can be used on both client and server.
+ * Server-only functions (git commands, filesystem) are in versioning.server.ts
  */
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
 export interface Version {
-  /** Version tag (e.g., "v1.0.0", "v2.1.0") */
+  /** Version identifier (e.g., "v1.0.0", "v2.1.0") */
   tag: string;
-  /** Human-readable version name */
+  /** Human-readable display name */
   name: string;
-  /** Commit hash */
-  commit: string;
-  /** Date of version */
-  date: string;
-  /** Whether this is the latest version */
+  /** Short identifier for URLs and paths */
+  slug: string;
+  /** Source commit hash (git versions only) */
+  commit?: string;
+  /** Release date in ISO format */
+  date?: string;
+  /** Whether this is the latest/current version */
   isLatest: boolean;
 }
 
-/**
- * Parse version from git tag
- * Supports formats: v1.0.0, 1.0.0, v1.0, etc.
- */
-export function parseVersion(tag: string): {
+export interface VersionConfig {
+  /** Current/latest version tag */
+  current: string;
+  /** All available versions, newest first */
+  versions: Version[];
+}
+
+export type VersionSource = "git" | "openapi";
+
+// -----------------------------------------------------------------------------
+// Semver Utilities
+// -----------------------------------------------------------------------------
+
+interface SemVer {
   major: number;
   minor: number;
   patch: number;
-} | null {
-  const match = tag.match(/^v?(\d+)\.(\d+)(?:\.(\d+))?$/);
+  raw: string;
+}
+
+/**
+ * Parse a version string into semver components.
+ * Accepts: v1.0.0, 1.0.0, v1.0, v1, etc.
+ */
+export function parseSemVer(tag: string): SemVer | null {
+  const match = tag.match(/^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?$/);
   if (!match) return null;
 
   return {
     major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3] || "0", 10),
+    minor: parseInt(match[2] ?? "0", 10),
+    patch: parseInt(match[3] ?? "0", 10),
+    raw: tag,
   };
 }
 
 /**
- * Compare two version tags
- * Returns: -1 if a < b, 0 if a === b, 1 if a > b
+ * Compare two versions. Returns negative if a < b, positive if a > b, 0 if equal.
  */
-export function compareVersions(a: string, b: string): number {
-  const versionA = parseVersion(a);
-  const versionB = parseVersion(b);
+export function compareSemVer(a: string, b: string): number {
+  const semA = parseSemVer(a);
+  const semB = parseSemVer(b);
 
-  if (!versionA || !versionB) {
-    return a.localeCompare(b);
-  }
+  if (!semA || !semB) return a.localeCompare(b);
 
-  if (versionA.major !== versionB.major) {
-    return versionA.major - versionB.major;
-  }
-  if (versionA.minor !== versionB.minor) {
-    return versionA.minor - versionB.minor;
-  }
-  return versionA.patch - versionB.patch;
+  const majorDiff = semA.major - semB.major;
+  if (majorDiff !== 0) return majorDiff;
+
+  const minorDiff = semA.minor - semB.minor;
+  if (minorDiff !== 0) return minorDiff;
+
+  return semA.patch - semB.patch;
 }
 
 /**
- * Sort versions in descending order (newest first)
+ * Format a version tag for display (normalizes to v1.0.0 format).
  */
-export function sortVersions(versions: Version[]): Version[] {
-  return [...versions].sort((a, b) => compareVersions(b.tag, a.tag));
+export function formatVersion(tag: string): string {
+  const semver = parseSemVer(tag);
+  if (!semver) return tag;
+  return `v${semver.major}.${semver.minor}.${semver.patch}`;
 }
 
 /**
- * Get version path for a document
- * /docs/v1/page -> /docs/v2/page
+ * Extract slug from version tag (v1.0.0 -> v1.0.0, v1 -> v1).
  */
-export function getVersionedPath(
+export function versionSlug(tag: string): string {
+  return tag.startsWith("v") ? tag : `v${tag}`;
+}
+
+// -----------------------------------------------------------------------------
+// Path Utilities (Client-Safe)
+// -----------------------------------------------------------------------------
+
+/**
+ * Rewrite a path to target a different version.
+ * /docs/v1/getting-started -> /docs/v2/getting-started
+ */
+export function rewritePathVersion(
   currentPath: string,
   targetVersion: string
 ): string {
-  // Match pattern: /docs/{version}/rest/of/path
-  const match = currentPath.match(/^(\/[^/]+\/)([^/]+)(\/.*)?$/);
+  // Match /docs/v{version}/rest or /api-docs/v{version}/rest
+  const versionedPattern = /^(\/[^/]+\/)(v[\d.]+)(\/.*)?$/;
+  const match = currentPath.match(versionedPattern);
 
-  if (!match) {
-    // No version in path, add it
-    return `${currentPath.replace(/\/$/, "")}/${targetVersion}`;
+  if (match) {
+    const [, prefix, , suffix] = match;
+    return `${prefix}${targetVersion}${suffix ?? ""}`;
   }
 
-  const [, base, , rest] = match;
-  return `${base}${targetVersion}${rest || ""}`;
+  // No version in path - this is the unversioned default
+  return currentPath;
 }
 
 /**
- * Extract current version from path
+ * Extract version from a path.
  */
-export function getVersionFromPath(path: string): string | null {
-  const match = path.match(/\/v(\d+(?:\.\d+)*(?:\.\d+)?)\//);
-  return match ? `v${match[1]}` : null;
+export function extractPathVersion(urlPath: string): string | null {
+  const match = urlPath.match(/\/(v[\d.]+)(?:\/|$)/);
+  return match ? match[1] : null;
+}
+
+// -----------------------------------------------------------------------------
+// Version Helpers (Client-Safe)
+// -----------------------------------------------------------------------------
+
+/**
+ * Find a specific version by tag.
+ */
+export function findVersion(
+  config: VersionConfig,
+  tag: string
+): Version | undefined {
+  return config.versions.find((v) => v.tag === tag || v.slug === tag);
 }
 
 /**
- * Check if a version tag is valid semver
+ * Get the latest version.
  */
-export function isValidVersionTag(tag: string): boolean {
-  return parseVersion(tag) !== null;
+export function getLatestVersion(config: VersionConfig): Version | undefined {
+  return config.versions.find((v) => v.isLatest);
 }
 
 /**
- * Format version for display
+ * Sort versions in descending order (newest first).
  */
-export function formatVersionName(tag: string): string {
-  const version = parseVersion(tag);
-  if (!version) return tag;
-
-  return `v${version.major}.${version.minor}.${version.patch}`;
-}
-
-/**
- * Get version metadata (this would typically call git commands on the server)
- * For now, returns a mock implementation
- */
-export async function getAvailableVersions(): Promise<Version[]> {
-  // This would run: git tag -l "v*" --format="%(refname:short)|%(objectname:short)|%(creatordate:iso8601)"
-  // For now, return mock data
-  return [
-    {
-      tag: "v2.0.0",
-      name: "Version 2.0.0",
-      commit: "abc1234",
-      date: "2024-03-01",
-      isLatest: true,
-    },
-    {
-      tag: "v1.5.0",
-      name: "Version 1.5.0",
-      commit: "def5678",
-      date: "2024-02-01",
-      isLatest: false,
-    },
-    {
-      tag: "v1.0.0",
-      name: "Version 1.0.0",
-      commit: "ghi9012",
-      date: "2024-01-01",
-      isLatest: false,
-    },
-  ];
+export function sortVersions(versions: Version[]): Version[] {
+  return [...versions].sort((a, b) => compareSemVer(b.tag, a.tag));
 }

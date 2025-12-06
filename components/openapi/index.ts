@@ -7,3 +7,4 @@ export * from "./RequestBody";
 export * from "./ResponseList";
 export * from "./SchemaViewer";
 export * from "./ParameterTable";
+export * from "./APIVersionSwitcher";

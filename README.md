@@ -32,7 +32,7 @@ A technical documentation platform built with Next.js 16 and Markdoc. Designed f
 - Node.js 20+
 - Bun (recommended) or npm/yarn
 
-## Installation
+## Installation/
 
 ```bash
 # Clone the repository
@@ -79,7 +79,7 @@ bun run docs:list
 
 ### Available Icons
 
-The CLI supports lucide-react icons: `BookOpen`, `Database`, `FileText`, `Folder`, `Code`, `Server`, `Shield`, `Workflow`, `GitBranch`, `Layers`, `Box`, `Cpu`, `Globe`, `Lock`, `Settings`, `Terminal`, `Zap`, `Activity`, `Archive`, `Briefcase`.
+The CLI supports any lucide-react icons
 
 ### Page Templates
 
@@ -148,6 +148,7 @@ Place an OpenAPI 3.x YAML file at `public/openapi.yaml`. The `/api-docs` page wi
 ### Markdoc Tags
 
 Custom tags are defined in `markdoc/tags/`. Each tag has:
+
 - A schema definition (attributes, self-closing, etc.)
 - A React component for rendering
 
@@ -159,12 +160,15 @@ Custom tags are defined in `markdoc/tags/`. Each tag has:
 {% adr id="001" title="Use Event Sourcing" status="accepted" date="2024-01-15" %}
 
 ## Context
+
 The system requires full audit trails...
 
 ## Decision
+
 We will use event sourcing for the order domain.
 
 ## Consequences
+
 - Complete event history preserved
 - Increased storage requirements
 
@@ -176,9 +180,9 @@ We will use event sourcing for the order domain.
 ```markdown
 {% mermaid %}
 graph TD
-    A[Client] --> B[API Gateway]
-    B --> C[Service A]
-    B --> D[Service B]
+A[Client] --> B[API Gateway]
+B --> C[Service A]
+B --> D[Service B]
 {% /mermaid %}
 ```
 
@@ -195,9 +199,9 @@ E = mc^2
 ```markdown
 {% proof project="mathlib-stable" %}
 theorem add_comm (a b : Nat) : a + b = b + a := by
-  induction a with
-  | zero => simp
-  | succ n ih => simp [Nat.succ_add, ih]
+induction a with
+| zero => simp
+| succ n ih => simp [Nat.succ_add, ih]
 {% /proof %}
 ```
 
@@ -221,4 +225,4 @@ This operation cannot be undone.
 
 ## License
 
-ISC
+MIT

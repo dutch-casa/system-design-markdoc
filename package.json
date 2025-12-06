@@ -2,8 +2,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "build": "bun run generate:versions && next build --webpack",
     "start": "next start",
+    "generate:versions": "bun run scripts/generate-versions.ts",
     "docs": "bun run scripts/docs-cli.ts",
     "docs:group": "bun run scripts/docs-cli.ts new:group",
     "docs:page": "bun run scripts/docs-cli.ts new:page",

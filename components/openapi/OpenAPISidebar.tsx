@@ -58,6 +58,7 @@ interface OpenAPISidebarContextValue {
   groups: TagGroup[];
   activeEndpoint: string | null;
   onEndpointClick: (operationId: string) => void;
+  onNavigate?: () => void;
 }
 
 // -----------------------------------------------------------------------------
@@ -126,6 +127,8 @@ interface RootProps extends ComponentPropsWithoutRef<"nav"> {
   groups: TagGroup[];
   activeEndpoint?: string | null;
   onEndpointClick?: (operationId: string) => void;
+  /** Callback when a navigation action occurs (e.g., to close mobile sheet) */
+  onNavigate?: () => void;
   children?: ReactNode;
 }
 
@@ -135,13 +138,14 @@ function Root({
   groups,
   activeEndpoint = null,
   onEndpointClick = () => {},
+  onNavigate,
   children,
   className,
   ...props
 }: RootProps) {
   return (
     <OpenAPISidebarContext.Provider
-      value={{ groups, activeEndpoint, onEndpointClick }}
+      value={{ groups, activeEndpoint, onEndpointClick, onNavigate }}
     >
       <Slottable
         as={as}
@@ -184,7 +188,7 @@ function Group({
   className,
   ...props
 }: GroupProps) {
-  const { activeEndpoint, onEndpointClick } = useOpenAPISidebarContext();
+  const { activeEndpoint, onEndpointClick, onNavigate } = useOpenAPISidebarContext();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const prefersReducedMotion = useReducedMotion();
 
@@ -248,10 +252,12 @@ function Group({
                     <EndpointLink
                       endpoint={endpoint}
                       isActive={endpoint.operationId === activeEndpoint}
-                      onClick={() =>
-                        endpoint.operationId &&
-                        onEndpointClick(endpoint.operationId)
-                      }
+                      onClick={() => {
+                        if (endpoint.operationId) {
+                          onEndpointClick(endpoint.operationId);
+                          onNavigate?.();
+                        }
+                      }}
                     />
                   </Item>
                 ))}
