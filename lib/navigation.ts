@@ -19,6 +19,8 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/docs", label: "Overview" },
       { href: "/docs/callouts", label: "Callouts" },
       { href: "/docs/code-blocks", label: "Code Blocks" },
+      { href: "/docs/tabs-steps", label: "Tabs & Steps" },
+      { href: "/docs/components", label: "UI Components" },
       { href: "/docs/math", label: "Math (KaTeX)" },
       { href: "/docs/diagrams", label: "Diagrams (Mermaid)" },
       { href: "/docs/adrs", label: "ADRs" },

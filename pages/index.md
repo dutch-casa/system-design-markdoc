@@ -1,9 +1,9 @@
 ---
-title: Documentation System
-description: A modern documentation system built with Next.js and Markdoc
+title: SysDoc
+description: System architecture documentation
 ---
 
-# Documentation System
+# SysDoc
 
 A modern, extensible documentation system built with Next.js, Markdoc, and Tailwind CSS.
 

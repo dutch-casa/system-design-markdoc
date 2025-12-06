@@ -3,6 +3,15 @@ import { callout } from "./tags/callout.markdoc";
 import { math } from "./tags/math.markdoc";
 import { mermaid } from "./tags/mermaid.markdoc";
 import { proof } from "./tags/proof.markdoc";
+import { tabs, tab } from "./tags/tabs.markdoc";
+import { steps, step } from "./tags/steps.markdoc";
+import { filetree } from "./tags/filetree.markdoc";
+import { terminal } from "./tags/terminal.markdoc";
+import { diff } from "./tags/diff.markdoc";
+import { collapsible } from "./tags/collapsible.markdoc";
+import { glossary } from "./tags/glossary.markdoc";
+import { cardgrid, card } from "./tags/cardgrid.markdoc";
+import { quote } from "./tags/quote.markdoc";
 import { fence } from "./nodes/fence.markdoc";
 import { heading } from "./nodes/heading.markdoc";
 
@@ -15,6 +24,18 @@ export const config = {
     math,
     mermaid,
     proof,
+    tabs,
+    tab,
+    steps,
+    step,
+    filetree,
+    terminal,
+    diff,
+    collapsible,
+    glossary,
+    cardgrid,
+    card,
+    quote,
   },
   nodes: {
     fence,

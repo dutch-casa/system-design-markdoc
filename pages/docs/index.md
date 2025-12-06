@@ -154,10 +154,17 @@ Beyond standard Markdown, this system provides custom blocks:
 
 ### Basic Blocks
 
-| Block                            | Description                                   |
-| -------------------------------- | --------------------------------------------- |
-| [Callouts](/docs/callouts)       | Highlighted notes, warnings, tips, and errors |
-| [Code Blocks](/docs/code-blocks) | Syntax-highlighted code with language support |
+| Block                            | Description                                          |
+| -------------------------------- | ---------------------------------------------------- |
+| [Callouts](/docs/callouts)       | Highlighted notes, warnings, tips, and errors        |
+| [Code Blocks](/docs/code-blocks) | Syntax-highlighted code, terminal, diffs, file trees |
+
+### Interactive
+
+| Block                             | Description                                 |
+| --------------------------------- | ------------------------------------------- |
+| [Tabs & Steps](/docs/tabs-steps)  | Multi-panel content and numbered procedures |
+| [UI Components](/docs/components) | Collapsible, glossary, cards, quotes        |
 
 ### Rich Content
 

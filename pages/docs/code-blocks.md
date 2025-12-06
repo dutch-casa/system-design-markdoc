@@ -216,3 +216,138 @@ Prism.js supports many languages out of the box. Common identifiers:
 {% callout type="tip" %}
 If a language isn't highlighted, check the [Prism.js documentation](https://prismjs.com/#supported-languages) for the correct identifier.
 {% /callout %}
+
+---
+
+## Terminal Output
+
+Display terminal sessions with command prompts and colored output using the `{%​ terminal %}` tag.
+
+### Syntax
+
+```md
+{%​ terminal %}
+$ npm install
+✓ Installed 42 packages
+$ npm run build
+✓ Build completed
+{%​ /terminal %}
+```
+
+### Example
+
+{% terminal %}
+$ bun install
+✓ Installed dependencies
+$ bun dev
+→ Starting development server...
+✓ Server running on http://localhost:3000
+{% /terminal %}
+
+### Output Styling
+
+Terminal output is automatically styled based on symbols:
+
+| Symbol | Style | Use Case |
+| ------ | ----- | -------- |
+| `$` | Prompt | Command line |
+| `✓` `✔` | Green | Success messages |
+| `✗` `✘` `×` | Red | Error messages |
+| `⚠` `!` | Amber | Warnings |
+| `→` `›` `▸` | Blue | Info messages |
+
+### Custom Prompt
+
+Change the prompt character:
+
+```md
+{%​ terminal prompt=">" %}
+> dir
+> echo "Hello"
+{%​ /terminal %}
+```
+
+---
+
+## File Trees
+
+Visualize directory structures using the `{%​ filetree %}` tag. Folders end with `/`, files without.
+
+### Syntax
+
+```md
+{%​ filetree %}
+src/
+  components/
+    Button.tsx
+    Input.tsx
+  utils/
+    helpers.ts
+  index.ts
+{%​ /filetree %}
+```
+
+### Example
+
+{% filetree %}
+src/
+  components/
+    auth/
+      LoginForm.tsx
+      SignupForm.tsx
+    ui/
+      Button.tsx
+      Input.tsx
+  lib/
+    db.ts
+    utils.ts
+  app/
+    layout.tsx
+    page.tsx
+  middleware.ts
+{% /filetree %}
+
+### Indentation
+
+Use 2 spaces per nesting level. Folders are distinguished by a trailing `/`.
+
+---
+
+## Diffs
+
+Show code changes with the `{%​ diff %}` tag. Lines starting with `-` are removed (red), lines starting with `+` are added (green).
+
+### Syntax
+
+````md
+{%​ diff language="typescript" %}
+- const old = "implementation";
++ const new = "implementation";
+  const unchanged = "stays";
+{%​ /diff %}
+````
+
+### Example
+
+{% diff language="javascript" %}
+- function greet(name) {
+-   return "Hello " + name;
++ function greet(name, formal = false) {
++   const prefix = formal ? "Good day" : "Hello";
++   return `${prefix}, ${name}!`;
+  }
+{% /diff %}
+
+### With Language Syntax
+
+Add a `language` attribute for syntax highlighting within the diff:
+
+{% diff language="typescript" %}
+- interface User {
+-   name: string;
++ interface User {
++   firstName: string;
++   lastName: string;
+    email: string;
+  }
+{% /diff %}
