@@ -5,7 +5,8 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import { useMermaid } from "@/hooks/useMermaid";
+import { useTheme } from "next-themes";
+import { useMermaid, type MermaidTheme } from "@/hooks/useMermaid";
 import { MermaidErrorBoundary } from "./MermaidErrorBoundary";
 import { useRouter } from "next/router";
 import panzoom, { PanZoom } from "panzoom";
@@ -57,7 +58,9 @@ interface RootProps {
 }
 
 function Root({ chart, as = "figure", asChild, children }: RootProps) {
-  const { svg, error, isPending } = useMermaid(chart);
+  const { resolvedTheme } = useTheme();
+  const mermaidTheme: MermaidTheme = resolvedTheme === "dark" ? "dark" : "default";
+  const { svg, error, isPending } = useMermaid(chart, mermaidTheme);
   const panzoomRef = useRef<PanZoom | null>(null);
   const Comp = asChild ? Slot : as;
 

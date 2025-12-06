@@ -8,6 +8,7 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_SECTIONS, type NavSection } from "@/lib/navigation";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { rewritePathVersion, type VersionConfig } from "@/lib/versioning";
 
 // -----------------------------------------------------------------------------
@@ -129,6 +130,21 @@ function NavSectionItem({
 }
 
 // -----------------------------------------------------------------------------
+// SideNavFooter
+// -----------------------------------------------------------------------------
+
+function SideNavFooter() {
+  return (
+    <div
+      data-slot="side-nav.footer"
+      className="sticky bottom-0 border-t border-border/50 bg-background px-6 py-3"
+    >
+      <ThemeToggle />
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // SideNavContent (inner content, no positioning)
 // -----------------------------------------------------------------------------
 
@@ -139,7 +155,12 @@ interface SideNavContentProps extends React.ComponentProps<"div"> {
   onNavigate?: () => void;
 }
 
-function SideNavContent({ versionConfig, className, onNavigate, ...props }: SideNavContentProps) {
+function SideNavContent({
+  versionConfig,
+  className,
+  onNavigate,
+  ...props
+}: SideNavContentProps) {
   const router = useRouter();
 
   const handleVersionChange = useCallback(
@@ -158,34 +179,39 @@ function SideNavContent({ versionConfig, className, onNavigate, ...props }: Side
   return (
     <div
       data-slot="side-nav.content"
-      className={cn("flex flex-col px-3 py-4", className)}
+      className={cn("flex h-full flex-col", className)}
       {...props}
     >
-      {/* Version Switcher */}
-      {hasVersions && (
-        <div className="mb-4 px-3">
-          <VersionSwitcher
-            versions={versionConfig.versions}
-            current={currentVersion}
-            onVersionChange={handleVersionChange}
-          />
-        </div>
-      )}
+      <div className="flex-1 px-3 py-4">
+        {/* Version Switcher */}
+        {hasVersions && (
+          <div className="mb-4 px-3">
+            <VersionSwitcher
+              versions={versionConfig.versions}
+              current={currentVersion}
+              onVersionChange={handleVersionChange}
+            />
+          </div>
+        )}
 
-      {/* Navigation Sections */}
-      {NAV_SECTIONS.map((item) => {
-        const hasActiveLink = item.links.some(
-          (link) => router.pathname === link.href
-        );
-        return (
-          <NavSectionItem
-            key={item.title}
-            item={item}
-            defaultOpen={hasActiveLink || true}
-            onNavigate={onNavigate}
-          />
-        );
-      })}
+        {/* Navigation Sections */}
+        {NAV_SECTIONS.map((item) => {
+          const hasActiveLink = item.links.some(
+            (link) => router.pathname === link.href
+          );
+          return (
+            <NavSectionItem
+              key={item.title}
+              item={item}
+              defaultOpen={hasActiveLink || true}
+              onNavigate={onNavigate}
+            />
+          );
+        })}
+      </div>
+
+      {/* Footer with Theme Toggle */}
+      <SideNavFooter />
     </div>
   );
 }
@@ -201,15 +227,17 @@ interface SideNavProps extends React.ComponentProps<"nav"> {
   onNavigate?: () => void;
 }
 
-function SideNav({ versionConfig, className, onNavigate, ...props }: SideNavProps) {
+function SideNav({
+  versionConfig,
+  className,
+  onNavigate,
+  ...props
+}: SideNavProps) {
   return (
     <nav
       data-slot="side-nav"
       aria-label="Documentation navigation"
-      className={cn(
-        "h-full w-full overflow-y-auto bg-background",
-        className
-      )}
+      className={cn("h-full w-full overflow-y-auto bg-background", className)}
       {...props}
     >
       <SideNavContent versionConfig={versionConfig} onNavigate={onNavigate} />

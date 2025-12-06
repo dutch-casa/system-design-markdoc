@@ -3,7 +3,7 @@ title: Overview
 description: Documentation system overview and usage guide
 ---
 
-# Doc System Overview
+# SysDoc Overview
 
 This documentation system is built on [Markdoc](https://markdoc.dev), a powerful content authoring framework that extends Markdown with custom tags and transforms.
 

@@ -1,10 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 
+export type MermaidTheme = "default" | "dark";
+
 /**
  * Renders mermaid diagram in an isolated iframe to avoid React DOM serialization issues.
  * Uses React Query for caching and race handling.
  */
-async function renderMermaidInIframe(chart: string): Promise<string> {
+async function renderMermaidInIframe(
+  chart: string,
+  theme: MermaidTheme
+): Promise<string> {
   if (!chart || typeof window === "undefined") return "";
 
   return new Promise((resolve, reject) => {
@@ -61,7 +66,7 @@ import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/di
 await mermaid.registerLayoutLoaders(elkLayouts);
 mermaid.initialize({
   startOnLoad: false,
-  theme: 'default',
+  theme: ${JSON.stringify(theme)},
   securityLevel: 'loose',
   layout: 'elk',
   flowchart: { 
@@ -95,10 +100,10 @@ try {
   });
 }
 
-export function useMermaid(chart: string) {
+export function useMermaid(chart: string, theme: MermaidTheme = "default") {
   const query = useQuery({
-    queryKey: ["mermaid", chart],
-    queryFn: () => renderMermaidInIframe(chart),
+    queryKey: ["mermaid", chart, theme],
+    queryFn: () => renderMermaidInIframe(chart, theme),
     enabled: !!chart && typeof window !== "undefined",
     staleTime: Infinity,
     retry: false,

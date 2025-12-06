@@ -10,6 +10,7 @@ import {
 import { ChevronRight, Folder } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Slottable } from "@/lib/polymorphic";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 import { cn } from "@/lib/utils";
 
@@ -152,14 +153,17 @@ function Root({
         asChild={asChild}
         data-slot="openapi-sidebar"
         aria-label="API endpoints navigation"
-        className={cn("px-3 py-4", className)}
+        className={cn("flex h-full flex-col", className)}
         {...props}
       >
         {children ?? (
           <>
-            {groups.map((group) => (
-              <Group key={group.name} group={group} />
-            ))}
+            <div className="flex-1 px-3 py-4">
+              {groups.map((group) => (
+                <Group key={group.name} group={group} />
+              ))}
+            </div>
+            <Footer />
           </>
         )}
       </Slottable>
@@ -422,6 +426,21 @@ function MethodBadge({
 }
 
 // -----------------------------------------------------------------------------
+// Footer
+// -----------------------------------------------------------------------------
+
+function Footer() {
+  return (
+    <div
+      data-slot="openapi-sidebar.footer"
+      className="sticky bottom-0 border-t border-border/50 bg-background px-6 py-3"
+    >
+      <ThemeToggle />
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
 // Export
 // -----------------------------------------------------------------------------
 
@@ -431,6 +450,7 @@ export const OpenAPISidebar = Object.assign(Root, {
   Item,
   EndpointLink,
   MethodBadge,
+  Footer,
 });
 
 export type { TagGroup, EndpointItem, HttpMethod };

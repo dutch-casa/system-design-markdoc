@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 
 import { AppLayout, useAppLayout } from "@/components/AppLayout";
 import { CommandDialog } from "@/components/CommandDialog";
@@ -207,61 +208,68 @@ export default function MyApp({
   // Custom layout pages manage everything themselves
   if (isCustomLayoutPage) {
     return (
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <QueryClientProvider client={queryClient}>
+          <Head>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <meta name="referrer" content="strict-origin" />
+            <link rel="shortcut icon" href="/favicon.ico" />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
+          <CommandDialog />
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      </ThemeProvider>
+    );
+  }
+
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
         <Head>
+          <title>{title}</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
           <meta name="referrer" content="strict-origin" />
+          <meta name="title" content={title} />
+          <meta name="description" content={description} />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <CommandDialog />
-        <Component {...pageProps} />
+
+        <AppLayout>
+          <AppLayout.Header>
+            <AppHeader />
+          </AppLayout.Header>
+
+          <CommandDialog />
+
+          <AppLayout.Body>
+            <AppLayout.Sidebar>
+              <DocsSidebar
+                versionConfig={
+                  SHOW_DOCS_VERSIONS ? DOCS_VERSION_CONFIG : undefined
+                }
+              />
+            </AppLayout.Sidebar>
+
+            <AppLayout.Main className="page-content">
+              <AppLayout.MainContent>
+                <Component {...pageProps} />
+              </AppLayout.MainContent>
+            </AppLayout.Main>
+
+            <AppLayout.Aside>
+              <TableOfContents toc={toc} />
+            </AppLayout.Aside>
+          </AppLayout.Body>
+        </AppLayout>
       </QueryClientProvider>
-    );
-  }
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Head>
-        <title>{title}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="referrer" content="strict-origin" />
-        <meta name="title" content={title} />
-        <meta name="description" content={description} />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <AppLayout>
-        <AppLayout.Header>
-          <AppHeader />
-        </AppLayout.Header>
-
-        <CommandDialog />
-
-        <AppLayout.Body>
-          <AppLayout.Sidebar>
-            <DocsSidebar
-              versionConfig={
-                SHOW_DOCS_VERSIONS ? DOCS_VERSION_CONFIG : undefined
-              }
-            />
-          </AppLayout.Sidebar>
-
-          <AppLayout.Main className="page-content">
-            <AppLayout.MainContent>
-              <Component {...pageProps} />
-            </AppLayout.MainContent>
-          </AppLayout.Main>
-
-          <AppLayout.Aside>
-            <TableOfContents toc={toc} />
-          </AppLayout.Aside>
-        </AppLayout.Body>
-      </AppLayout>
-    </QueryClientProvider>
+    </ThemeProvider>
   );
 }
